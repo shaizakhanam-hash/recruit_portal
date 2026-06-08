@@ -141,6 +141,24 @@ body{
   position:relative;overflow:hidden;
   display:flex;flex-direction:column;align-items:center;
 }
+.sticky-hero{
+  position:sticky;top:60px;z-index:90;
+  background:rgba(13,17,23,.92);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,255,255,.07);
+  padding:12px 24px;
+  text-align:center;
+  display:none;
+}
+.sticky-hero-text{
+  font-size:16px;font-weight:800;color:#FFFFFF;
+  letter-spacing:-.3px;line-height:1;
+}
+.sticky-hero-text em{
+  font-style:normal;
+  background:linear-gradient(135deg,#C9970D 0%,#F5D06A 50%,#C9970D 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
 .hero::before{
   content:'';position:absolute;inset:0;
   background:
@@ -1212,6 +1230,18 @@ function Portal() {
     })();
   }, []);
 
+  useEffect(() => {
+    const hero = document.querySelector('.hero');
+    const sticky = document.getElementById('sticky-hero');
+    if (!hero || !sticky) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { sticky.style.display = entry.isIntersecting ? 'none' : 'block'; },
+      { threshold: 0, rootMargin: '-60px 0px 0px 0px' }
+    );
+    observer.observe(hero);
+    return () => observer.disconnect();
+  }, []);
+
   const openJobBySlug = (jobList, slug) => {
     const match = jobList.find(j => toSlug(j.title, j.company) === slug);
     if (match) setOpenJD(match);
@@ -1223,15 +1253,19 @@ function Portal() {
         <div className="hdr-left">
           <ShineLogo height={26} light />
           <div className="hdr-divider"/>
-          <div className="hdr-tagline">Exclusive <strong>Premium Roles</strong></div>
+          <div className="hdr-tagline">Powered by <strong>Shine.com</strong></div>
         </div>
         <div className="hdr-right">
-          <div className="hdr-pill">PREMIUM ROLES</div>
+          <div className="hdr-pill">● NOW HIRING</div>
         </div>
       </header>
 
+      <div className="sticky-hero" id="sticky-hero">
+        <div className="sticky-hero-text">Where Top Techies <em>Get Headhunted</em></div>
+      </div>
+
       <section className="hero">
-        <div className="hero-eyebrow"><span className="hero-dot"/>Senior &amp; Lead Roles</div>
+        <div className="hero-eyebrow"><span className="hero-dot"/>Senior &amp; Lead · Software Engineering</div>
         <h1>Where Top Techies<br /><em>Get Headhunted</em></h1>
         <p className="hero-sub">Curated high-impact roles in software engineering — mid to senior level. No applications lost in a void. Hiring managers call you directly.</p>
         <div className="hero-stats">
@@ -1325,7 +1359,7 @@ function JobPage() {
         <div className="hdr-left">
           <ShineLogo height={26} light />
           <div className="hdr-divider"/>
-          <div className="hdr-tagline">Exclusive <strong>Premium Roles</strong></div>
+          <div className="hdr-tagline">Powered by <strong>Shine.com</strong></div>
         </div>
       </header>
       <div className="loading" style={{paddingTop:80}}>Loading…</div>
@@ -1338,7 +1372,7 @@ function JobPage() {
         <div className="hdr-left">
           <ShineLogo height={26} light />
           <div className="hdr-divider"/>
-          <div className="hdr-tagline">Exclusive <strong>Premium Roles</strong></div>
+          <div className="hdr-tagline">Powered by <strong>Shine.com</strong></div>
         </div>
       </header>
       <div className="empty-state" style={{paddingTop:80}}>
@@ -1355,7 +1389,7 @@ function JobPage() {
         <div className="hdr-left">
           <ShineLogo height={26} light />
           <div className="hdr-divider"/>
-          <div className="hdr-tagline">Exclusive <strong>Premium Roles</strong></div>
+          <div className="hdr-tagline">Powered by <strong>Shine.com</strong></div>
         </div>
         <div className="hdr-right">
           <a href="/" style={{color:"var(--content-muted)",fontSize:13,fontWeight:600,textDecoration:"none"}}>← All Jobs</a>
