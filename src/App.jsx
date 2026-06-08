@@ -174,7 +174,7 @@ body{
   max-width:480px;margin:0 auto 44px;line-height:1.7;
 }
 .hero-stats{
-  display:inline-flex;
+  display:flex;
   background:rgba(255,255,255,.05);
   border:1px solid rgba(255,255,255,.08);
   border-radius:var(--r-xl);
@@ -333,9 +333,55 @@ body{
 .skill-chip:last-child::after{display:none}
 
 @media(max-width:640px){
-  .jcard{flex-direction:column;align-items:flex-start}
-  .jcard-right{align-items:flex-start;flex-direction:row;flex-wrap:wrap}
-  .hstat{padding:14px 18px}
+  /* Header */
+  .hdr{padding:0 16px;height:56px}
+  .hdr-tagline{display:none}
+  .hdr-divider{display:none}
+  /* Hero */
+  .hero{padding:48px 16px 40px}
+  .hero h1{font-size:clamp(28px,8vw,42px);letter-spacing:-1px}
+  .hero-sub{font-size:14px;margin-bottom:28px}
+  .hero-stats{flex-direction:column;width:100%;border-radius:var(--r-lg)}
+  .hstat{padding:14px 20px;border-right:none;border-bottom:1px solid rgba(255,255,255,.08)}
+  .hstat:last-child{border:none}
+  .hstat-n{font-size:20px}
+  /* Marquee */
+  .co-badge{padding:8px 14px}
+  /* Section */
+  .section{padding:28px 14px 60px}
+  /* Job card */
+  .jcard{flex-direction:column;align-items:flex-start;padding:16px}
+  .jcard-right{align-items:flex-start;flex-direction:row;flex-wrap:wrap;width:100%;margin-top:12px;gap:8px}
+  .jcard-apply{width:100%;justify-content:center;padding:11px 16px}
+  .jcard-badges{flex-direction:row;flex-wrap:wrap}
+  .jcard-title{font-size:15px}
+  .skills-label{display:none}
+  /* Modals */
+  .ov{padding:0;align-items:flex-end}
+  .jd-modal{border-radius:var(--r-2xl) var(--r-2xl) 0 0;max-height:92vh;width:100%}
+  .apply-modal{border-radius:var(--r-2xl) var(--r-2xl) 0 0;max-height:92vh;width:100%;padding:24px 20px}
+  .jd-hdr{padding:20px 18px 16px}
+  .jd-body{padding:16px 18px}
+  .jd-footer{padding:14px 18px 20px}
+  .jd-title{font-size:18px}
+  .r2{grid-template-columns:1fr}
+  /* Admin */
+  .adm-wrap{padding:20px 14px 60px}
+  .adm-top{flex-direction:column;gap:12px}
+  .btns{flex-wrap:wrap}
+  .stats{grid-template-columns:1fr 1fr}
+  .jrow{flex-direction:column;align-items:flex-start;gap:10px}
+  .jra{flex-wrap:wrap}
+  .tbl-wrap{font-size:11px}
+  th,td{padding:8px 10px}
+  /* Job page */
+  .job-page-wrap{padding:20px 14px 60px}
+  .job-sticky-bar{border-radius:var(--r-lg);margin:0 14px 14px;bottom:14px}
+}
+@media(max-width:400px){
+  .hero h1{font-size:26px}
+  .jcard-title{font-size:14px}
+  .modal-h{font-size:18px}
 }
 
 /* ── JD MODAL ── */
@@ -1206,7 +1252,7 @@ function Portal() {
           jobs.length===0
             ? <div className="empty-state"><div className="empty-ic">📭</div><p>No openings right now. Check back soon.</p></div>
             : jobs.map((job, idx) => (
-              <div key={job.id} className="jcard" onClick={()=>{ setOpenJD(job); window.history.pushState({}, '', '/jobs/'+toSlug(job.title, job.company)); }}>
+              <div key={job.id} className="jcard" onClick={()=>{ window.location.href='/jobs/'+toSlug(job.title, job.company); }}>
                 <div className="co-logo" style={{background:logoColor(job.company)}}>{logoInitials(job.company)}</div>
                 <div className="jcard-body">
                   <div className="jcard-co">{job.company}</div>
@@ -1230,7 +1276,7 @@ function Portal() {
                     <span className="badge-hiring">Actively Hiring</span>
                     {idx < 2 && <span className="badge-early">Be An Early Applicant</span>}
                   </div>
-                  <button className="jcard-apply" onClick={e=>{ e.stopPropagation(); setOpenJD(job); window.history.pushState({}, '', '/jobs/'+toSlug(job.title, job.company)); }}>
+                  <button className="jcard-apply" onClick={e=>{ e.stopPropagation(); window.location.href='/jobs/'+toSlug(job.title, job.company); }}>
                     Apply <Ic n="arrow" s={13}/>
                   </button>
                 </div>
@@ -1316,7 +1362,7 @@ function JobPage() {
       </header>
 
       {/* Full JD laid out as a page, not modal */}
-      <div style={{maxWidth:720,margin:"0 auto",padding:"40px 24px 80px"}}>
+      <div className="job-page-wrap" style={{maxWidth:720,margin:"0 auto",padding:"40px 24px 80px"}}>
         {/* Header card */}
         <div style={{background:"var(--surface-base)",border:"1px solid var(--stroke-default)",borderRadius:"var(--r-2xl)",padding:"32px",marginBottom:16,boxShadow:"var(--el-raised)"}}>
           <div style={{display:"flex",alignItems:"center",gap:16,marginBottom:20}}>
@@ -1350,7 +1396,7 @@ function JobPage() {
         ))}
 
         {/* Sticky apply bar */}
-        <div style={{
+        <div className="job-sticky-bar" style={{
           position:"sticky",bottom:20,
           background:"var(--surface-base)",
           border:"1px solid var(--stroke-default)",
