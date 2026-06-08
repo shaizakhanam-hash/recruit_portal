@@ -1185,7 +1185,7 @@ function Portal() {
 
       <section className="hero">
         <div className="hero-eyebrow"><span className="hero-dot"/>Senior &amp; Lead Roles</div>
-        <h1>Where Top Engineers<br /><em>Get Headhunted</em></h1>
+        <h1>Where Top Techies<br /><em>Get Headhunted</em></h1>
         <p className="hero-sub">Curated high-impact roles in software engineering — mid to senior level. No applications lost in a void. Hiring managers call you directly.</p>
         <div className="hero-stats">
           <div className="hstat"><div className="hstat-n">500+</div><div className="hstat-l">Placements Made</div></div>
