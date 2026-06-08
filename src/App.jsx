@@ -179,14 +179,16 @@ body{
   border:1px solid rgba(255,255,255,.08);
   border-radius:var(--r-xl);
   overflow:hidden;
+  max-width:640px;
+  width:100%;
 }
 .hstat{
-  padding:18px 28px;text-align:center;
+  flex:1;padding:20px 24px;text-align:center;
   border-right:1px solid rgba(255,255,255,.08);
 }
 .hstat:last-child{border:none}
-.hstat-n{font-size:22px;font-weight:800;color:#FFFFFF;line-height:1;letter-spacing:-.5px}
-.hstat-l{font-size:11px;font-weight:500;color:rgba(255,255,255,.4);margin-top:3px;letter-spacing:.3px;text-transform:uppercase}
+.hstat-n{font-size:24px;font-weight:800;color:#FFFFFF;line-height:1;letter-spacing:-.5px}
+.hstat-l{font-size:10px;font-weight:600;color:rgba(255,255,255,.4);margin-top:5px;letter-spacing:.4px;text-transform:uppercase;line-height:1.4}
 
 /* ── JOBS SECTION ── */
 .section{max-width:820px;margin:0 auto;padding:48px 24px 80px}
@@ -1186,10 +1188,9 @@ function Portal() {
         <h1>Where Top Engineers<br /><em>Get Headhunted</em></h1>
         <p className="hero-sub">Curated high-impact roles in software engineering — mid to senior level. No applications lost in a void. Hiring managers call you directly.</p>
         <div className="hero-stats">
-          <div className="hstat"><div className="hstat-n">{jobs.length}</div><div className="hstat-l">Open Roles</div></div>
-          
-          <div className="hstat"><div className="hstat-n">Top Roles</div><div className="hstat-l">Leading Companies</div></div>
-          <div className="hstat"><div className="hstat-n">Direct Calls</div><div className="hstat-l">From HR Managers</div></div>
+          <div className="hstat"><div className="hstat-n">500+</div><div className="hstat-l">Placements Made</div></div>
+          <div className="hstat"><div className="hstat-n">50+</div><div className="hstat-l">Hiring Companies</div></div>
+          <div className="hstat"><div className="hstat-n">Direct</div><div className="hstat-l">Calls from Hiring Managers</div></div>
         </div>
       </section>
 
