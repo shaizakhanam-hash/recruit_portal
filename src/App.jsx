@@ -12,14 +12,12 @@ async function sb() {
   return _sb;
 }
 
-// ── ROUTING: check URL path ───────────────────────────────
 function getRoute() {
   const path = window.location.pathname;
   if (path === "/admin" || path === "/admin/") return "admin";
   return "portal";
 }
 
-// ── SHINE LOGO ────────────────────────────────────────────
 const ShineLogo = ({ height = 28 }) => (
   <svg height={height} viewBox="0 0 240 180" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ display: "block" }}>
     <path d="M38.8164 104.079C43.392 104.079 47.3954 105.167 50.8271 107.341C54.3162 109.458 56.7761 112.462 58.2061 116.353L48.6826 120.815C47.9963 118.87 46.7375 117.325 44.9072 116.181C43.1343 114.979 41.104 114.378 38.8164 114.378C37.1577 114.378 35.8415 114.722 34.8691 115.408C33.9542 116.095 33.4972 117.039 33.4971 118.24C33.4971 118.87 33.6685 119.442 34.0117 119.957C34.3549 120.472 34.8981 120.93 35.6416 121.33C36.4424 121.731 37.4147 122.103 38.5586 122.446L46.0225 124.678C49.9118 125.822 52.8862 127.567 54.9453 129.913C57.0043 132.202 58.0341 135.034 58.0342 138.409C58.0342 141.327 57.262 143.874 55.7178 146.048C54.2307 148.222 52.1431 149.939 49.4551 151.197C46.7669 152.399 43.5922 153 39.9316 153C34.7841 153 30.294 151.798 26.4619 149.396C22.6869 146.935 20.113 143.645 18.7402 139.525L28.1777 135.062C29.3788 137.58 31.0085 139.554 33.0674 140.984C35.1265 142.415 37.415 143.13 39.9316 143.13C41.7618 143.13 43.1634 142.758 44.1357 142.015C45.108 141.271 45.5937 140.241 45.5938 138.925C45.5938 138.238 45.4223 137.666 45.0791 137.208C44.736 136.693 44.2213 136.235 43.5352 135.835C42.8488 135.434 41.9905 135.091 40.9609 134.805L32.9824 132.573C29.1503 131.486 26.2046 129.741 24.1455 127.338C22.0865 124.878 21.0567 121.988 21.0566 118.67C21.0566 115.752 21.8 113.206 23.2871 111.031C24.7742 108.857 26.8617 107.169 29.5498 105.968C32.2381 104.709 35.3274 104.079 38.8164 104.079Z" fill="white"/>
@@ -44,12 +42,16 @@ body{font-family:'Inter',sans-serif;background:#0a0d14;color:#e2e8f0;min-height:
   --muted:#8892a4;--accent:#1a56ff;--accent2:#faca22;
   --green:#00d68f;--red:#ff4d6d;--r:12px;--sh:0 4px 24px rgba(0,0,0,.4);
 }
+
+/* HEADER */
 .hdr{background:rgba(10,13,20,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
 .hdr-left{display:flex;align-items:center;gap:20px}
 .hdr-div{width:1px;height:28px;background:var(--border2)}
 .hdr-tag{font-size:12px;color:var(--muted)}.hdr-tag span{color:var(--accent2);font-weight:600}
 .hdr-count{background:rgba(26,86,255,.15);border:1px solid rgba(26,86,255,.3);color:#7aa2ff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px}
-.hero{padding:64px 24px 56px;text-align:center;background:radial-gradient(ellipse at 50% 0%,rgba(26,86,255,.18) 0%,transparent 65%);border-bottom:1px solid var(--border)}
+
+/* HERO */
+.hero{padding:60px 24px 52px;text-align:center;background:radial-gradient(ellipse at 50% 0%,rgba(26,86,255,.18) 0%,transparent 65%);border-bottom:1px solid var(--border)}
 .hero-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(26,86,255,.12);border:1px solid rgba(26,86,255,.25);color:#7aa2ff;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:5px 14px;border-radius:20px;margin-bottom:22px}
 .blink{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;animation:blink 1.8s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
@@ -61,46 +63,133 @@ body{font-family:'Inter',sans-serif;background:#0a0d14;color:#e2e8f0;min-height:
 .hs:last-child{border:none}
 .hs-n{font-size:20px;font-weight:800;color:#fff}
 .hs-l{font-size:11px;color:var(--muted);margin-top:2px}
-.wrap{max-width:860px;margin:0 auto;padding:44px 20px 60px}
+
+/* JOB LIST */
+.wrap{max-width:800px;margin:0 auto;padding:44px 20px 60px}
 .jh{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px}
 .jh-t{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px}
 .jh-b{background:rgba(0,214,143,.1);border:1px solid rgba(0,214,143,.25);color:var(--green);font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px}
-.jcard{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:12px;transition:all .22s;position:relative;overflow:hidden}
-.jcard::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--accent),#7aa2ff);transform:scaleY(0);transform-origin:bottom;transition:transform .22s}
+
+/* JOB CARD — compact list view */
+.jcard{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--r);padding:20px 22px;margin-bottom:10px;
+  cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;gap:16px;
+  position:relative;overflow:hidden;
+}
+.jcard::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--accent),#7aa2ff);transform:scaleY(0);transform-origin:bottom;transition:transform .2s}
 .jcard:hover{border-color:rgba(26,86,255,.4);background:var(--card2);box-shadow:var(--sh);transform:translateY(-2px)}
 .jcard:hover::before{transform:scaleY(1)}
-.jcard-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
-.jcard-body{flex:1;min-width:0}
-.jco{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px}
-.jti{font-size:19px;font-weight:700;color:#fff;margin-bottom:11px;line-height:1.25}
-.jmeta{display:flex;flex-wrap:wrap;gap:13px;margin-bottom:11px}
-.mi{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted)}
-.mi svg{color:#7aa2ff}
-.jtags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
-.jtag{background:rgba(26,86,255,.1);border:1px solid rgba(26,86,255,.2);color:#7aa2ff;font-size:11px;font-weight:600;padding:3px 9px;border-radius:6px}
-.jsumm{font-size:13px;color:var(--muted);line-height:1.65}
+
+/* Company logo box */
+.co-logo{
+  width:48px;height:48px;border-radius:10px;
+  background:rgba(255,255,255,.06);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;font-weight:800;color:#fff;
+  flex-shrink:0;letter-spacing:-1px;
+  font-family:'Inter',sans-serif;
+}
+
+.jcard-info{flex:1;min-width:0}
+.jcard-top-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.jcard-title{font-size:16px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:4px}
+.jcard-company{font-size:12px;color:var(--muted);font-weight:500;margin-bottom:10px}
+.jcard-meta{display:flex;flex-wrap:wrap;gap:14px}
+.mi{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);font-weight:500}
+.mi svg{color:#7aa2ff;flex-shrink:0}
 .jcard-right{display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex-shrink:0}
-.sal{background:rgba(250,202,34,.1);border:1px solid rgba(250,202,34,.25);color:var(--accent2);font-size:13px;font-weight:700;padding:6px 14px;border-radius:8px;white-space:nowrap}
-.abtn{background:linear-gradient(135deg,var(--accent),#4d7fff);color:#fff;border:none;cursor:pointer;font-size:13px;font-weight:700;padding:10px 22px;border-radius:8px;font-family:inherit;white-space:nowrap;transition:all .2s}
-.abtn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(26,86,255,.5)}
+.sal{background:rgba(250,202,34,.1);border:1px solid rgba(250,202,34,.25);color:var(--accent2);font-size:12px;font-weight:700;padding:5px 12px;border-radius:8px;white-space:nowrap}
+.view-jd-btn{
+  background:rgba(26,86,255,.15);border:1px solid rgba(26,86,255,.3);
+  color:#7aa2ff;font-size:12px;font-weight:700;
+  padding:6px 14px;border-radius:7px;white-space:nowrap;
+  display:flex;align-items:center;gap:5px;
+}
+.jcard:hover .view-jd-btn{background:rgba(26,86,255,.25);border-color:rgba(26,86,255,.5);color:#fff}
+
 .empty-jobs{text-align:center;padding:60px 20px;color:var(--muted)}
 .empty-ic{font-size:44px;margin-bottom:12px}
 .loading{text-align:center;padding:60px;color:var(--muted);font-size:15px}
-.ov{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(4px);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;animation:fi .2s ease}
+
+/* OVERLAY MODAL */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(4px);z-index:200;display:flex;align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto;animation:fi .2s ease}
 @keyframes fi{from{opacity:0}to{opacity:1}}
-.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:34px;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;box-shadow:0 32px 80px rgba(0,0,0,.7);animation:su .22s ease;position:relative}
+
+/* JD DETAIL MODAL */
+.jd-modal{
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:16px;width:100%;max-width:680px;
+  box-shadow:0 32px 80px rgba(0,0,0,.7);
+  animation:su .22s ease;
+  margin:auto;
+  overflow:hidden;
+}
 @keyframes su{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+.jd-modal-header{
+  padding:28px 28px 24px;
+  border-bottom:1px solid var(--border);
+  position:relative;
+}
+.jd-modal-close{
+  position:absolute;top:18px;right:18px;
+  background:rgba(255,255,255,.06);border:1px solid var(--border);
+  color:var(--muted);width:32px;height:32px;border-radius:8px;
+  cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;
+  transition:all .18s;
+}
+.jd-modal-close:hover{background:rgba(255,255,255,.12);color:#fff}
+.jd-co-row{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.jd-co-logo{
+  width:52px;height:52px;border-radius:12px;
+  background:rgba(255,255,255,.06);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;font-weight:800;color:#fff;flex-shrink:0;
+}
+.jd-co-name{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:3px}
+.jd-title{font-size:22px;font-weight:800;color:#fff;line-height:1.2;letter-spacing:-.5px}
+.jd-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.jd-pill{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--muted);font-size:12px;font-weight:500;padding:5px 12px;border-radius:20px}
+.jd-pill svg{color:#7aa2ff}
+.jd-sal-pill{background:rgba(250,202,34,.1);border-color:rgba(250,202,34,.25);color:var(--accent2);font-weight:700}
+
+.jd-modal-body{padding:24px 28px}
+.jd-section{margin-bottom:22px}
+.jd-section-title{font-size:11px;font-weight:700;color:#7aa2ff;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px}
+.jd-section-text{font-size:14px;color:#b0bac8;line-height:1.75;white-space:pre-wrap}
+.jd-tags{display:flex;flex-wrap:wrap;gap:6px}
+.jd-tag{background:rgba(26,86,255,.1);border:1px solid rgba(26,86,255,.2);color:#7aa2ff;font-size:11px;font-weight:600;padding:3px 10px;border-radius:6px}
+
+.jd-modal-footer{
+  padding:20px 28px 24px;
+  border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+}
+.jd-apply-btn{
+  background:linear-gradient(135deg,var(--accent),#4d7fff);
+  color:#fff;border:none;cursor:pointer;
+  font-size:15px;font-weight:700;
+  padding:13px 32px;border-radius:10px;
+  font-family:inherit;transition:all .2s;flex:1;max-width:260px;
+}
+.jd-apply-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(26,86,255,.5)}
+.jd-share{font-size:12px;color:var(--muted)}
+
+/* APPLY MODAL */
+.apply-modal{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:32px;width:100%;max-width:540px;box-shadow:0 32px 80px rgba(0,0,0,.7);animation:su .22s ease;position:relative;margin:auto}
 .mcl{position:absolute;top:14px;right:16px;background:rgba(255,255,255,.06);border:1px solid var(--border);color:var(--muted);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .18s}
 .mcl:hover{background:rgba(255,255,255,.12);color:#fff}
-.mpill{display:flex;align-items:center;gap:10px;background:rgba(26,86,255,.1);border:1px solid rgba(26,86,255,.2);border-radius:10px;padding:12px 16px;margin-bottom:24px}
+.mpill{display:flex;align-items:center;gap:10px;background:rgba(26,86,255,.1);border:1px solid rgba(26,86,255,.2);border-radius:10px;padding:12px 16px;margin-bottom:22px}
 .mph{font-size:14px;font-weight:700;color:#fff}
 .mps{font-size:12px;color:var(--muted)}
-.mh{font-size:24px;font-weight:800;color:#fff;margin-bottom:5px;letter-spacing:-.5px}
-.ms{font-size:14px;color:var(--muted);margin-bottom:24px}
-.dv{height:1px;background:var(--border);margin:20px 0}
-.fl{font-size:10px;font-weight:700;color:#7aa2ff;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px}
+.mh{font-size:22px;font-weight:800;color:#fff;margin-bottom:5px;letter-spacing:-.5px}
+.ms{font-size:14px;color:var(--muted);margin-bottom:22px}
+.dv{height:1px;background:var(--border);margin:18px 0}
+.fl{font-size:10px;font-weight:700;color:#7aa2ff;text-transform:uppercase;letter-spacing:2px;margin-bottom:11px}
 .r2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:500px){.r2{grid-template-columns:1fr}.jcard-top{flex-direction:column}.jcard-right{align-items:flex-start}}
+@media(max-width:500px){.r2{grid-template-columns:1fr}.jcard{flex-direction:column;align-items:flex-start}.jcard-right{align-items:flex-start;flex-direction:row;flex-wrap:wrap}}
 .fg{margin-bottom:13px}
 .lb{font-size:12px;font-weight:600;color:rgba(255,255,255,.7);margin-bottom:5px;display:block}
 .op{font-weight:400;color:var(--muted)}
@@ -122,7 +211,7 @@ body{font-family:'Inter',sans-serif;background:#0a0d14;color:#e2e8f0;min-height:
 .suc{text-align:center;padding:10px 0}
 .sic{font-size:62px;display:block;margin-bottom:14px;animation:pop .4s ease}
 @keyframes pop{0%{transform:scale(.3);opacity:0}80%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
-.sh2{font-size:26px;font-weight:800;color:#fff;margin-bottom:7px;letter-spacing:-.5px}
+.sh2{font-size:24px;font-weight:800;color:#fff;margin-bottom:7px;letter-spacing:-.5px}
 .sp{font-size:14px;color:var(--muted);line-height:1.65;margin-bottom:22px}
 .sbox{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:20px;text-align:left}
 .sr{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border)}
@@ -131,6 +220,7 @@ body{font-family:'Inter',sans-serif;background:#0a0d14;color:#e2e8f0;min-height:
 .idp{background:linear-gradient(135deg,var(--accent),#4d7fff);color:#fff;font-size:11px;font-weight:800;padding:3px 10px;border-radius:6px}
 .cbtn{background:rgba(255,255,255,.08);border:1px solid var(--border2);color:#fff;cursor:pointer;font-size:14px;font-weight:600;padding:11px 26px;border-radius:9px;font-family:inherit;transition:all .2s}
 .cbtn:hover{background:rgba(255,255,255,.14)}
+
 /* ADMIN */
 .adm-login{max-width:360px;margin:70px auto;padding:0 20px}
 .adm-card{background:var(--card2);border:1px solid var(--border2);border-radius:16px;padding:36px;text-align:center}
@@ -146,7 +236,7 @@ body{font-family:'Inter',sans-serif;background:#0a0d14;color:#e2e8f0;min-height:
 .btn-p:hover{filter:brightness(1.1);transform:translateY(-1px)}
 .btn-g{background:rgba(0,214,143,.15);border:1px solid rgba(0,214,143,.3);color:var(--green);cursor:pointer;font-size:13px;font-weight:700;padding:9px 16px;border-radius:8px;font-family:inherit;display:flex;align-items:center;gap:6px;transition:all .2s}
 .btn-g:hover{background:rgba(0,214,143,.25)}
-.btn-gh{background:rgba(255,255,255,.06);border:1px solid var(--border2);color:rgba(255,255,255,.7);cursor:pointer;font-size:13px;font-weight:600;padding:9px 14px;border-radius:8px;font-family:inherit;transition:all .2s}
+.btn-gh{background:rgba(255,255,255,.06);border:1px solid var(--border2);color:rgba(255,255,255,.7);cursor:pointer;font-size:13px;font-weight:600;padding:9px 14px;border-radius:8px;font-family:inherit;transition:all .2s;text-decoration:none;display:flex;align-items:center}
 .btn-gh:hover{background:rgba(255,255,255,.1);color:#fff}
 .btn-sm{background:rgba(26,86,255,.12);border:1px solid rgba(26,86,255,.25);color:#7aa2ff;cursor:pointer;font-size:12px;font-weight:600;padding:5px 11px;border-radius:7px;font-family:inherit;transition:all .2s}
 .btn-sm:hover{background:rgba(26,86,255,.22)}
@@ -186,16 +276,6 @@ tr:hover td{background:rgba(255,255,255,.02)}
 .tag-x{display:flex;align-items:center;gap:4px;background:rgba(26,86,255,.15);border:1px solid rgba(26,86,255,.3);color:#7aa2ff;font-size:12px;font-weight:600;padding:3px 9px;border-radius:20px;cursor:pointer}
 .tag-x:hover{background:rgba(255,77,109,.15);color:var(--red);border-color:rgba(255,77,109,.3)}
 .tags-row{display:flex;gap:7px;margin-bottom:5px}
-/* JD PASTE BOX */
-.jd-box{background:rgba(250,202,34,.05);border:1.5px solid rgba(250,202,34,.2);border-radius:12px;padding:20px;margin-bottom:22px}
-.jd-box-title{font-size:12px;font-weight:700;color:var(--accent2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:8px}
-.jd-box-sub{font-size:12px;color:var(--muted);margin-bottom:10px}
-.parse-btn{background:linear-gradient(135deg,#b8860b,var(--accent2));color:#0a0d14;border:none;cursor:pointer;font-size:13px;font-weight:800;padding:10px 20px;border-radius:8px;font-family:inherit;transition:all .2s;display:flex;align-items:center;gap:7px;margin-top:10px}
-.parse-btn:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px)}
-.parse-btn:disabled{opacity:.5;cursor:not-allowed}
-.parse-status{font-size:12px;margin-top:8px;padding:8px 12px;border-radius:7px}
-.parse-ok{background:rgba(0,214,143,.1);border:1px solid rgba(0,214,143,.25);color:var(--green)}
-.parse-err{background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.25);color:var(--red)}
 .footer{border-top:1px solid var(--border);padding:26px 24px;display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap}
 .ft{font-size:12px;color:rgba(255,255,255,.2)}
 `;
@@ -210,12 +290,28 @@ const Ic = ({ n, s = 13 }) => {
     edit: <><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></>,
     trash: <><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></>,
     dl: <><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></>,
-    spark: <><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></>,
+    arr: <><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/></>,
+    arrow: <><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></>,
   };
   return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{p[n]}</svg>;
 };
 
-// ── APPLY MODAL ───────────────────────────────────────────
+// Generate initials-based logo color
+function logoColor(name) {
+  const colors = ["#1a56ff","#7c3aed","#059669","#dc2626","#d97706","#0891b2","#be185d","#16a34a"];
+  let hash = 0;
+  for (let i = 0; i < (name||"").length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  return colors[Math.abs(hash) % colors.length];
+}
+
+function logoInitials(name) {
+  if (!name) return "?";
+  const words = name.trim().split(/\s+/);
+  if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+  return (words[0][0] + words[1][0]).toUpperCase();
+}
+
+// ── APPLY FORM ────────────────────────────────────────────
 function ApplyModal({ job, onClose }) {
   const [f, setF] = useState({ name:"", phone:"", email:"", years_exp:"", notice_period:"", current_salary:"", expected_salary:"" });
   const [cv, setCv] = useState(null);
@@ -265,7 +361,7 @@ function ApplyModal({ job, onClose }) {
 
   if (done) return (
     <div className="ov" onClick={e=>e.target===e.currentTarget&&onClose()}>
-      <div className="modal">
+      <div className="apply-modal">
         <button className="mcl" onClick={onClose}>×</button>
         <div className="suc">
           <span className="sic">🎉</span>
@@ -284,10 +380,10 @@ function ApplyModal({ job, onClose }) {
 
   return (
     <div className="ov" onClick={e=>e.target===e.currentTarget&&onClose()}>
-      <div className="modal">
+      <div className="apply-modal">
         <button className="mcl" onClick={onClose}>×</button>
         <div className="mpill">
-          <span style={{fontSize:20}}>💼</span>
+          <div className="co-logo" style={{background:logoColor(job.company),width:36,height:36,fontSize:14,borderRadius:8}}>{logoInitials(job.company)}</div>
           <div><div className="mph">{job.title}</div><div className="mps">{job.company} · {job.location}</div></div>
         </div>
         <div className="mh">Apply Now</div>
@@ -342,7 +438,7 @@ function ApplyModal({ job, onClose }) {
           onDragLeave={()=>setDrag(false)}
           onDrop={e=>{e.preventDefault();setDrag(false);handleFile(e.dataTransfer.files[0])}}
           onClick={()=>document.getElementById("cv-up").click()}>
-          <div style={{color:"#7aa2ff",marginBottom:6}}><Ic n="up" s={22}/></div>
+          <div style={{color:"#7aa2ff",marginBottom:6}}><Ic n="up" s={20}/></div>
           {cv?<div className="upok">✓ {cv.name}</div>:<><div className="upt"><strong>Click to upload</strong> or drag & drop</div><div className="uph">PDF or Word · max 5 MB</div></>}
           <input id="cv-up" type="file" style={{display:"none"}} accept=".pdf,.doc,.docx" onChange={e=>handleFile(e.target.files[0])} />
         </div>
@@ -352,68 +448,82 @@ function ApplyModal({ job, onClose }) {
   );
 }
 
-// ── JOB FORM MODAL with AI JD Parser ─────────────────────
+// ── JD DETAIL MODAL ───────────────────────────────────────
+function JDModal({ job, onApply, onClose }) {
+  return (
+    <div className="ov" onClick={e=>e.target===e.currentTarget&&onClose()}>
+      <div className="jd-modal">
+        <div className="jd-modal-header">
+          <button className="jd-modal-close" onClick={onClose}>×</button>
+          <div className="jd-co-row">
+            <div className="jd-co-logo" style={{background:logoColor(job.company)}}>
+              {logoInitials(job.company)}
+            </div>
+            <div>
+              <div className="jd-co-name">{job.company}</div>
+              <div className="jd-title">{job.title}</div>
+            </div>
+          </div>
+          <div className="jd-pills">
+            <span className="jd-pill"><Ic n="loc" s={12}/>{job.location}</span>
+            <span className="jd-pill"><Ic n="bag" s={12}/>{job.experience}</span>
+            <span className="jd-pill"><Ic n="globe" s={12}/>{job.type}</span>
+            {job.salary && <span className="jd-pill jd-sal-pill">{job.salary}</span>}
+          </div>
+          {(job.tags||[]).length > 0 && (
+            <div className="jd-tags" style={{marginTop:12}}>
+              {job.tags.map(t=><span key={t} className="jd-tag">{t}</span>)}
+            </div>
+          )}
+        </div>
+
+        <div className="jd-modal-body">
+          {job.about && (
+            <div className="jd-section">
+              <div className="jd-section-title">About This Role</div>
+              <div className="jd-section-text">{job.about}</div>
+            </div>
+          )}
+          {job.responsibilities && (
+            <div className="jd-section">
+              <div className="jd-section-title">Responsibilities</div>
+              <div className="jd-section-text">{job.responsibilities}</div>
+            </div>
+          )}
+          {job.requirements && (
+            <div className="jd-section">
+              <div className="jd-section-title">Requirements</div>
+              <div className="jd-section-text">{job.requirements}</div>
+            </div>
+          )}
+          {job.perks && (
+            <div className="jd-section">
+              <div className="jd-section-title">Perks & Benefits</div>
+              <div className="jd-section-text">{job.perks}</div>
+            </div>
+          )}
+          {!job.about && !job.responsibilities && !job.requirements && (
+            <div style={{color:"var(--muted)",fontSize:14,textAlign:"center",padding:"20px 0"}}>No detailed JD added yet.</div>
+          )}
+        </div>
+
+        <div className="jd-modal-footer">
+          <button className="jd-apply-btn" onClick={onApply}>Apply for this Role →</button>
+          <div className="jd-share">Posted by Shine.com</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── ADMIN JOB FORM ────────────────────────────────────────
 function JobFormModal({ editJob, onSave, onClose }) {
-  const blank = { title:"", company:"", location:"", type:"Full-time", experience:"", salary:"", tags:[], summary:"" };
+  const blank = { title:"", company:"", location:"", type:"Full-time", experience:"", salary:"", tags:[], about:"", responsibilities:"", requirements:"", perks:"" };
   const [form, setForm] = useState(editJob ? { ...editJob, tags:[...(editJob.tags||[])] } : blank);
   const [ti, setTi] = useState("");
   const [busy, setBusy] = useState(false);
-  const [jdText, setJdText] = useState("");
-  const [parsing, setParsing] = useState(false);
-  const [parseMsg, setParseMsg] = useState(null);
   const set = (k,v) => setForm(p=>({...p,[k]:v}));
   const addTag = () => { const t=ti.trim(); if(t&&!form.tags.includes(t)) set("tags",[...form.tags,t]); setTi(""); };
-
-  const parseJD = async () => {
-    if (!jdText.trim()) return alert("Paste a JD first.");
-    setParsing(true); setParseMsg(null);
-    try {
-      const res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-20250514",
-          max_tokens: 1000,
-          messages: [{
-            role: "user",
-            content: `You are a job description parser. Extract information from this JD and return ONLY a valid JSON object with these exact keys:
-- title: job title (string)
-- company: company name if mentioned, else "Leading Company" (string)
-- location: city/location (string)
-- type: one of "Full-time", "Remote", "Hybrid", "Contract" (string)
-- experience: experience required e.g. "3-6 yrs" (string)
-- salary: salary range if mentioned e.g. "₹15-25 LPA", else "" (string)
-- tags: array of up to 6 key skills (array of strings)
-- summary: 2-sentence compelling summary of the role for candidates (string)
-
-JD:
-${jdText}
-
-Return ONLY the JSON object, no markdown, no explanation.`
-          }]
-        })
-      });
-      const data = await res.json();
-      const text = data.content?.[0]?.text || "";
-      const clean = text.replace(/```json|```/g,"").trim();
-      const parsed = JSON.parse(clean);
-      setForm(prev => ({
-        ...prev,
-        title: parsed.title || prev.title,
-        company: parsed.company || prev.company,
-        location: parsed.location || prev.location,
-        type: parsed.type || prev.type,
-        experience: parsed.experience || prev.experience,
-        salary: parsed.salary || prev.salary,
-        tags: parsed.tags || prev.tags,
-        summary: parsed.summary || prev.summary,
-      }));
-      setParseMsg({ ok: true, text: "✓ JD parsed successfully — review and edit below before posting." });
-    } catch(err) {
-      console.error(err);
-      setParseMsg({ ok: false, text: "Parse failed. Fill in the fields manually below." });
-    } finally { setParsing(false); }
-  };
 
   const save = async () => {
     if (!form.title.trim()) return alert("Job title is required.");
@@ -432,28 +542,15 @@ Return ONLY the JSON object, no markdown, no explanation.`
 
   return (
     <div className="ov" onClick={e=>e.target===e.currentTarget&&onClose()}>
-      <div className="modal" style={{maxWidth:600}}>
+      <div className="apply-modal" style={{maxWidth:620}}>
         <button className="mcl" onClick={onClose}>×</button>
-        <div className="mh">{editJob?"Edit Job":"Post New Job"}</div>
-        <div className="ms" style={{marginBottom:20}}>Paste a JD to auto-fill, or fill in manually below.</div>
+        <div className="mh" style={{marginBottom:4}}>{editJob?"Edit Job":"Post New Job"}</div>
+        <div className="ms">Fill in job details. The full JD is shown when a candidate clicks the card.</div>
 
-        {/* AI JD PARSER */}
-        {!editJob && (
-          <div className="jd-box">
-            <div className="jd-box-title"><Ic n="spark" s={13}/>AI JD Parser</div>
-            <div className="jd-box-sub">Paste your full job description and Claude will extract all the details automatically.</div>
-            <textarea className="ta" rows={5} placeholder="Paste full job description here…" value={jdText} onChange={e=>setJdText(e.target.value)} />
-            <button className="parse-btn" onClick={parseJD} disabled={parsing||!jdText.trim()}>
-              <Ic n="spark" s={14}/>{parsing?"Parsing JD…":"Parse with AI →"}
-            </button>
-            {parseMsg && <div className={`parse-status ${parseMsg.ok?"parse-ok":"parse-err"}`}>{parseMsg.text}</div>}
-          </div>
-        )}
-
-        <div className="fl" style={{marginTop:4}}>Job Details {!editJob&&<span style={{color:"var(--muted)",fontWeight:400,textTransform:"none",letterSpacing:0}}>— review and edit parsed fields</span>}</div>
+        <div className="fl">Basic Info</div>
         <div className="fg"><label className="lb">Job Title</label><input className="inp" placeholder="e.g. Senior Software Engineer" value={form.title} onChange={e=>set("title",e.target.value)} /></div>
         <div className="r2">
-          <div className="fg"><label className="lb">Company</label><input className="inp" placeholder="e.g. Leading MNC" value={form.company} onChange={e=>set("company",e.target.value)} /></div>
+          <div className="fg"><label className="lb">Company Name</label><input className="inp" placeholder="e.g. HCL Technologies" value={form.company} onChange={e=>set("company",e.target.value)} /></div>
           <div className="fg"><label className="lb">Location</label><input className="inp" placeholder="e.g. Bengaluru" value={form.location} onChange={e=>set("location",e.target.value)} /></div>
         </div>
         <div className="r2">
@@ -474,11 +571,28 @@ Return ONLY the JSON object, no markdown, no explanation.`
             <button className="btn-sm" onClick={addTag}>Add</button>
           </div>
         </div>
+
+        <div className="dv"/>
+        <div className="fl">Full Job Description <span style={{color:"var(--muted)",fontWeight:400,textTransform:"none",letterSpacing:0}}>— shown when candidate opens the card</span></div>
+
         <div className="fg">
-          <label className="lb">Job Summary <span className="op">(shown on card)</span></label>
-          <div className="hint">2–3 sentences that appear on the job listing card.</div>
-          <textarea className="ta" rows={3} placeholder="Describe the role and team..." value={form.summary} onChange={e=>set("summary",e.target.value)} />
+          <label className="lb">About This Role</label>
+          <textarea className="ta" rows={3} placeholder="Overview of the role and team..." value={form.about} onChange={e=>set("about",e.target.value)} />
         </div>
+        <div className="fg">
+          <label className="lb">Responsibilities</label>
+          <div className="hint">Paste directly from your JD — line breaks are preserved.</div>
+          <textarea className="ta" rows={5} placeholder={"• Design and build microservices\n• Own performance and reliability\n• Mentor junior engineers"} value={form.responsibilities} onChange={e=>set("responsibilities",e.target.value)} />
+        </div>
+        <div className="fg">
+          <label className="lb">Requirements</label>
+          <textarea className="ta" rows={5} placeholder={"• 4+ years Java / Spring Boot\n• Distributed systems knowledge"} value={form.requirements} onChange={e=>set("requirements",e.target.value)} />
+        </div>
+        <div className="fg">
+          <label className="lb">Perks & Benefits <span className="op">(optional)</span></label>
+          <textarea className="ta" rows={3} placeholder={"• ESOPs after 2 yrs\n• Health insurance\n• Remote Fridays"} value={form.perks} onChange={e=>set("perks",e.target.value)} />
+        </div>
+
         <div style={{display:"flex",gap:9,marginTop:8}}>
           <button className="sbtn" style={{margin:0}} onClick={save} disabled={busy}>{busy?"Saving…":editJob?"Save Changes →":"Post Job →"}</button>
           <button className="btn-gh" onClick={onClose}>Cancel</button>
@@ -539,7 +653,7 @@ function AdminPanel() {
     const hdr = cols.join(",");
     const rows = filteredApps.map(r=>cols.map(c=>`"${(r[c]??"").toString().replace(/"/g,'""')}"`).join(",")).join("\n");
     const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([hdr+"\n"+rows],{type:"text/csv"}));
-    a.download = `shine-applications-${new Date().toISOString().slice(0,10)}.csv`; a.click();
+    a.download = `shine-apps-${new Date().toISOString().slice(0,10)}.csv`; a.click();
   };
 
   if (!authed) return (
@@ -571,27 +685,24 @@ function AdminPanel() {
         <div className="adm-top">
           <div>
             <div className="adm-title">Admin Dashboard</div>
-            <div className="adm-sub">{jobs.filter(j=>j.active).length} live jobs · {apps.length} applications total</div>
+            <div className="adm-sub">{jobs.filter(j=>j.active).length} live · {apps.length} applications</div>
           </div>
           <div className="btns">
             {view==="jobs" && <button className="btn-p" onClick={()=>{setEditJob(null);setShowForm(true)}}><Ic n="plus" s={13}/> Post Job</button>}
             {view==="apps" && <button className="btn-g" onClick={downloadCSV}><Ic n="dl" s={13}/> Download CSV</button>}
-            <a href="/" className="btn-gh" style={{textDecoration:"none",display:"flex",alignItems:"center"}}>← View Portal</a>
+            <a href="/" className="btn-gh">← View Portal</a>
           </div>
         </div>
-
         <div className="stats">
           <div className="sc"><div className="scn">{jobs.length}</div><div className="scl">Total Jobs</div></div>
           <div className="sc"><div className="scn">{jobs.filter(j=>j.active).length}</div><div className="scl">Live Now</div></div>
           <div className="sc"><div className="scn">{apps.length}</div><div className="scl">Applications</div></div>
           <div className="sc"><div className="scn">{apps.filter(a=>a.cv_filename).length}</div><div className="scl">With CV</div></div>
         </div>
-
         <div className="seg">
           <button className={`seg-b${view==="jobs"?" act":""}`} onClick={()=>setView("jobs")}>Jobs ({jobs.length})</button>
           <button className={`seg-b${view==="apps"?" act":""}`} onClick={()=>setView("apps")}>Applications ({apps.length})</button>
         </div>
-
         {loading ? <div className="loading">Loading…</div> : view==="jobs" ? (
           jobs.length===0
             ? <div className="empty-jobs"><div className="empty-ic">📋</div><p>No jobs yet. Click "Post Job" to add your first role.</p></div>
@@ -616,9 +727,7 @@ function AdminPanel() {
             ))
         ) : (
           <>
-            <div className="frow">
-              <input className="fi" placeholder="🔍  Search by name, phone, or email…" value={search} onChange={e=>setSearch(e.target.value)} />
-            </div>
+            <div className="frow"><input className="fi" placeholder="🔍  Search by name, phone, or email…" value={search} onChange={e=>setSearch(e.target.value)} /></div>
             {filteredApps.length===0
               ? <div className="empty-jobs"><div className="empty-ic">📭</div><p>No applications yet.</p></div>
               : <div className="tbl-wrap"><table>
@@ -651,7 +760,8 @@ function AdminPanel() {
 function Portal() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeJob, setActiveJob] = useState(null);
+  const [openJD, setOpenJD] = useState(null);
+  const [applyJob, setApplyJob] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -676,7 +786,7 @@ function Portal() {
       <section className="hero">
         <div className="hero-pill"><span className="blink" />Actively Hiring · 2026</div>
         <h1>Find Your Next<br /><span className="hi">Dream Role</span></h1>
-        <p className="hero-sub">Handpicked opportunities from top companies — vetted, high-growth, and ready to interview you.</p>
+        <p className="hero-sub">Handpicked opportunities from top companies — vetted, high-growth, ready to interview.</p>
         <div className="hero-stats">
           <div className="hs"><div className="hs-n">{jobs.length}</div><div className="hs-l">Open Roles</div></div>
           <div className="hs"><div className="hs-n">2 Days</div><div className="hs-l">Response Time</div></div>
@@ -690,27 +800,32 @@ function Portal() {
           <div className="jh-t">Current Openings</div>
           <div className="jh-b">● Updated Today</div>
         </div>
+
         {loading ? <div className="loading">Loading jobs…</div> :
           jobs.length===0
             ? <div className="empty-jobs"><div className="empty-ic">📭</div><p>No openings right now. Check back soon.</p></div>
             : jobs.map(job=>(
-              <div key={job.id} className="jcard">
-                <div className="jcard-top">
-                  <div className="jcard-body">
-                    <div className="jco">{job.company}</div>
-                    <div className="jti">{job.title}</div>
-                    <div className="jmeta">
-                      <span className="mi"><Ic n="loc" />{job.location}</span>
-                      <span className="mi"><Ic n="bag" />{job.experience}</span>
-                      <span className="mi"><Ic n="globe" />{job.type}</span>
-                    </div>
-                    <div className="jtags">{(job.tags||[]).map(t=><span key={t} className="jtag">{t}</span>)}</div>
-                    <div className="jsumm">{job.summary}</div>
+              <div key={job.id} className="jcard" onClick={()=>setOpenJD(job)}>
+                {/* Company Logo */}
+                <div className="co-logo" style={{background:logoColor(job.company)}}>
+                  {logoInitials(job.company)}
+                </div>
+
+                {/* Info */}
+                <div className="jcard-info">
+                  <div className="jcard-title">{job.title}</div>
+                  <div className="jcard-company">{job.company}</div>
+                  <div className="jcard-meta">
+                    <span className="mi"><Ic n="loc" />{job.location}</span>
+                    <span className="mi"><Ic n="bag" />{job.experience}</span>
+                    <span className="mi"><Ic n="globe" />{job.type}</span>
                   </div>
-                  <div className="jcard-right">
-                    <div className="sal">{job.salary}</div>
-                    <button className="abtn" onClick={()=>setActiveJob(job)}>Apply Now →</button>
-                  </div>
+                </div>
+
+                {/* Right side */}
+                <div className="jcard-right">
+                  {job.salary && <div className="sal">{job.salary}</div>}
+                  <div className="view-jd-btn"><Ic n="arrow" s={12}/>View JD</div>
                 </div>
               </div>
             ))
@@ -722,12 +837,24 @@ function Portal() {
         <div className="ft">© 2026 Shine.com · All Rights Reserved · Premium Talent Platform</div>
       </footer>
 
-      {activeJob && <ApplyModal job={activeJob} onClose={()=>setActiveJob(null)} />}
+      {/* JD Detail Modal */}
+      {openJD && !applyJob && (
+        <JDModal
+          job={openJD}
+          onApply={()=>{ setApplyJob(openJD); setOpenJD(null); }}
+          onClose={()=>setOpenJD(null)}
+        />
+      )}
+
+      {/* Apply Modal */}
+      {applyJob && (
+        <ApplyModal job={applyJob} onClose={()=>setApplyJob(null)} />
+      )}
     </>
   );
 }
 
-// ── ROOT: URL-based routing ───────────────────────────────
+// ── ROOT ──────────────────────────────────────────────────
 export default function App() {
   const route = getRoute();
   return (
