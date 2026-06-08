@@ -1,35 +1,73 @@
 import { useState, useEffect, useCallback } from "react";
 
 const ADMIN_PASSWORD = "recruit@admin2025";
+const SUPABASE_URL = "https://rbwluolctwcyqxixisfb.supabase.co";
+const SUPABASE_KEY = "sb_publishable_ZkfyWoc2f-ZMFC7ByX0ANg_OTe5yLP8";
 
-// ── MOCK DB ──────────────────────────────────────────────────
-const db = (() => {
-  let companies = [
-    { id: "hcl", name: "HCL Technologies", slug: "hcl", logo: "H", color: "#0057ff", tagline: "Build the future of enterprise technology." },
-  ];
-  let jobs = [
-    { id: "j1", company_id: "hcl", active: true, title: "Senior Software Engineer – Java", department: "Product Engineering", location: "Noida, UP", type: "Full-time · Hybrid", experience: "4–8 Years", salary: "₹18–28 LPA", skills: ["Java", "Spring Boot", "Microservices", "Kafka"], about: "Join our product engineering group to design and scale mission-critical enterprise software used by Fortune 500 clients.", responsibilities: ["Architect Java microservices on Spring Boot", "Own performance and observability", "Drive technical design reviews", "Mentor junior engineers"], requirements: ["4+ years Java / Spring Boot", "Distributed systems knowledge", "MySQL/PostgreSQL experience"], perks: ["ESOPs after 2 yrs", "Health + Life insurance", "Remote Fridays"], created_at: new Date().toISOString() },
-    { id: "j2", company_id: "hcl", active: true, title: "Lead Frontend Engineer – React", department: "UI Platform", location: "Bengaluru, KA", type: "Full-time · Hybrid", experience: "5–9 Years", salary: "₹22–35 LPA", skills: ["React", "TypeScript", "Next.js", "GraphQL"], about: "Own the front-end architecture for HCL's next-generation SaaS platform reaching 2M+ users globally.", responsibilities: ["Define frontend engineering roadmap", "Build shared component library", "Mentor frontend team of 6"], requirements: ["5+ years React/TypeScript", "Led a frontend team of 3+", "Strong design sensibility"], perks: ["ESOPs after 2 yrs", "MacBook Pro", "Quarterly offsites"], created_at: new Date().toISOString() },
-  ];
-  let applications = [];
-  let _jid = 100;
+let _supabase = null;
+async function getClient() {
+  if (_supabase) return _supabase;
+  const { createClient } = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm");
+  _supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+  return _supabase;
+}
 
-  return {
-    getCompanies: () => [...companies],
-    getCompany: (id) => companies.find(c => c.id === id) || null,
-    addCompany: (data) => { const c = { ...data, id: data.slug, logo: data.name.charAt(0).toUpperCase(), created_at: new Date().toISOString() }; companies = [...companies, c]; return c; },
-    updateCompany: (id, data) => { companies = companies.map(c => c.id === id ? { ...c, ...data } : c); return companies.find(c => c.id === id); },
-    deleteCompany: (id) => { companies = companies.filter(c => c.id !== id); },
-    getJobs: (company_id) => jobs.filter(j => j.company_id === company_id),
-    addJob: (data) => { const j = { ...data, id: "j" + (++_jid), active: true, created_at: new Date().toISOString() }; jobs = [j, ...jobs]; return j; },
-    updateJob: (id, data) => { jobs = jobs.map(j => j.id === id ? { ...j, ...data } : j); },
-    deleteJob: (id) => { jobs = jobs.filter(j => j.id !== id); },
-    saveApplication: (data) => { const a = { ...data, id: "APP-" + Math.random().toString(36).slice(2, 8).toUpperCase(), created_at: new Date().toISOString() }; applications = [a, ...applications]; return a; },
-    getApplications: (company_id) => applications.filter(a => a.company_id === company_id),
-  };
-})();
+const db = {
+  getCompanies: async () => {
+    const s = await getClient();
+    const { data } = await s.from("companies").select("*").order("created_at");
+    return data || [];
+  },
+  getCompany: async (id) => {
+    const s = await getClient();
+    const { data } = await s.from("companies").select("*").eq("id", id).single();
+    return data;
+  },
+  addCompany: async (data) => {
+    const s = await getClient();
+    const row = { ...data, id: data.slug, logo: data.name.charAt(0).toUpperCase() };
+    const { data: d } = await s.from("companies").insert([row]).select().single();
+    return d;
+  },
+  updateCompany: async (id, data) => {
+    const s = await getClient();
+    await s.from("companies").update(data).eq("id", id);
+  },
+  deleteCompany: async (id) => {
+    const s = await getClient();
+    await s.from("companies").delete().eq("id", id);
+  },
+  getJobs: async (company_id) => {
+    const s = await getClient();
+    const { data } = await s.from("jobs").select("*").eq("company_id", company_id).order("created_at", { ascending: false });
+    return data || [];
+  },
+  addJob: async (data) => {
+    const s = await getClient();
+    const { data: d } = await s.from("jobs").insert([{ ...data, active: true }]).select().single();
+    return d;
+  },
+  updateJob: async (id, data) => {
+    const s = await getClient();
+    await s.from("jobs").update(data).eq("id", id);
+  },
+  deleteJob: async (id) => {
+    const s = await getClient();
+    await s.from("jobs").delete().eq("id", id);
+  },
+  saveApplication: async (data) => {
+    const s = await getClient();
+    const row = { ...data, id: "APP-" + Math.random().toString(36).slice(2, 8).toUpperCase() };
+    const { data: d } = await s.from("applications").insert([row]).select().single();
+    return d;
+  },
+  getApplications: async (company_id) => {
+    const s = await getClient();
+    const { data } = await s.from("applications").select("*").eq("company_id", company_id).order("created_at", { ascending: false });
+    return data || [];
+  },
+};
 
-// ── STYLES ───────────────────────────────────────────────────
 const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@400;500;600;700;800&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -138,7 +176,6 @@ body{font-family:'Outfit',sans-serif;background:#f2f4f8;color:#111827}
 .home-btn{background:var(--navy);color:#fff;border:none;cursor:pointer;font-size:14px;font-weight:600;padding:11px 24px;border-radius:8px;font-family:inherit;transition:background .2s}
 .home-btn:hover{background:var(--blue)}
 
-/* ADMIN */
 .adm-login{max-width:360px;margin:70px auto;padding:0 20px}
 .adm-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:36px;box-shadow:var(--sh);text-align:center}
 .adm-h{font-family:'Instrument Serif',serif;font-size:26px;color:var(--navy);margin-bottom:6px}
@@ -198,8 +235,8 @@ tr:last-child td{border:none}
 tr:hover td{background:#f8f9ff}
 .empty{text-align:center;padding:44px 20px;color:var(--muted)}
 .empty-ic{font-size:40px;margin-bottom:10px}
+.loading{text-align:center;padding:60px 20px;color:var(--muted);font-size:15px}
 
-/* MODAL */
 .mbg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px}
 .modal{background:var(--card);border-radius:var(--r);padding:32px;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;box-shadow:0 20px 70px rgba(0,0,0,.25);position:relative}
 .mc{position:absolute;top:14px;right:16px;background:none;border:none;cursor:pointer;font-size:22px;color:var(--muted);line-height:1}
@@ -217,7 +254,6 @@ tr:hover td{background:#f8f9ff}
 .footer{background:var(--navy);color:rgba(255,255,255,.35);text-align:center;font-size:12px;padding:18px;letter-spacing:.3px}
 .footer strong{color:rgba(255,255,255,.6)}
 
-/* Home directory */
 .dir-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:13px;margin-top:32px}
 .dir-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;cursor:pointer;box-shadow:var(--sh);transition:all .2s;display:flex;flex-direction:column;gap:10px}
 .dir-card:hover{box-shadow:var(--sh2);transform:translateY(-3px)}
@@ -227,7 +263,6 @@ tr:hover td{background:#f8f9ff}
 .dir-link{font-size:12px;font-weight:600;margin-top:auto}
 `;
 
-// ── ICONS ──────────────────────────────────────────────────
 const Ic = ({ n, s = 14 }) => {
   const paths = {
     loc: <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>,
@@ -244,7 +279,6 @@ const Ic = ({ n, s = 14 }) => {
   return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{paths[n]}</svg>;
 };
 
-// ── CANDIDATE PAGES ────────────────────────────────────────
 function Landing({ company, jobs, onJob }) {
   const bg = `linear-gradient(150deg,${company.color}ee 0%,${company.color}99 60%,${company.color}66 100%)`;
   const activeJobs = jobs.filter(j => j.active);
@@ -253,7 +287,7 @@ function Landing({ company, jobs, onJob }) {
       <div className="hero" style={{ background: bg }}>
         <div className="hero-pill"><span className="dot" />{activeJobs.length} Open Role{activeJobs.length !== 1 ? "s" : ""}</div>
         <h1>Careers at<br /><em>{company.name}</em></h1>
-        <p className="hero-p">{company.tagline || "We're hiring experienced professionals. Apply directly — no middlemen."}</p>
+        <p className="hero-p">{company.tagline || "We're hiring experienced professionals. Apply directly."}</p>
         <div className="hero-stats">
           <div><div className="sn">{activeJobs.length}</div><div className="sl">Open Roles</div></div>
           <div><div className="sn">Direct</div><div className="sl">Apply Process</div></div>
@@ -344,16 +378,17 @@ function RegForm({ company, job, onSuccess, onBack }) {
     const e = validate();
     if (Object.keys(e).length) { setErrs(e); return; }
     setBusy(true);
-    await new Promise(r => setTimeout(r, 900));
     try {
-      const rec = db.saveApplication({ company_id: company.id, job_id: job.id, job_title: job.title, job_location: job.location, ...f, cv_filename: cv ? cv.name : null });
+      const rec = await db.saveApplication({ company_id: company.id, job_id: job.id, job_title: job.title, job_location: job.location, ...f, cv_filename: cv ? cv.name : null });
       onSuccess({ ...f, job_title: job.title, job_location: job.location, id: rec.id });
+    } catch(err) {
+      alert("Submission failed. Please try again.");
+      console.error(err);
     } finally { setBusy(false); }
   };
 
   const pillBg = company.color + "14";
   const pillBorder = company.color + "30";
-  const btnBg = `linear-gradient(135deg,${company.color},${company.color}bb)`;
 
   return (
     <div className="form-wrap">
@@ -365,7 +400,6 @@ function RegForm({ company, job, onSuccess, onBack }) {
         </div>
         <div className="fh">Apply for this Role</div>
         <div className="fs">Our talent team will reach out within 2 business days.</div>
-
         <div className="fl">Personal Details</div>
         <div className="r2">
           <div className="fg">
@@ -384,7 +418,6 @@ function RegForm({ company, job, onSuccess, onBack }) {
           <input className={`inp${errs.email ? " e" : ""}`} placeholder="you@company.com" value={f.email} onChange={e => { set("email", e.target.value); clr("email"); }} />
           {errs.email && <div className="et">{errs.email}</div>}
         </div>
-
         <div className="div" />
         <div className="fl">Experience & Availability <span style={{ color: "#c0c8d8", fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>— optional</span></div>
         <div className="r2">
@@ -410,7 +443,6 @@ function RegForm({ company, job, onSuccess, onBack }) {
             <input className="inp" placeholder="e.g. 18" value={f.expected_salary} onChange={e => set("expected_salary", e.target.value)} />
           </div>
         </div>
-
         <div className="div" />
         <div className="fl">Resume / CV <span style={{ color: "#c0c8d8", fontWeight: 400, textTransform: "none", letterSpacing: 0 }}>— optional</span></div>
         <div className={`upz${drag ? " drag" : ""}${cv ? " done" : ""}`}
@@ -422,7 +454,7 @@ function RegForm({ company, job, onSuccess, onBack }) {
           {cv ? <div className="fok">✓ {cv.name}</div> : <><div className="ut"><strong>Click to upload</strong> or drag & drop</div><div className="uh">PDF or Word · max 5 MB</div></>}
           <input id="cv-inp" type="file" style={{ display: "none" }} accept=".pdf,.doc,.docx" onChange={e => handleFile(e.target.files[0])} />
         </div>
-        <button className="sub-btn" style={{ background: btnBg }} onClick={submit} disabled={busy}>
+        <button className="sub-btn" style={{ background: `linear-gradient(135deg,${company.color},${company.color}bb)` }} onClick={submit} disabled={busy}>
           {busy ? "Submitting…" : "Submit Application →"}
         </button>
       </div>
@@ -430,7 +462,7 @@ function RegForm({ company, job, onSuccess, onBack }) {
   );
 }
 
-function Success({ data, company, onHome }) {
+function SuccessPage({ data, onHome }) {
   return (
     <div className="wrap"><div className="success">
       <span className="s-ic">🎉</span>
@@ -446,7 +478,6 @@ function Success({ data, company, onHome }) {
   );
 }
 
-// ── JOB MODAL ──────────────────────────────────────────────
 function JobModal({ companies, editJob, defaultCompanyId, onSave, onClose }) {
   const blank = { company_id: defaultCompanyId || "", title: "", department: "", location: "", type: "Full-time · Hybrid", experience: "", salary: "", skills: [], about: "", responsibilities: [], requirements: [], perks: [] };
   const [form, setForm] = useState(editJob ? { ...editJob, skills: [...(editJob.skills || [])], responsibilities: [...(editJob.responsibilities || [])], requirements: [...(editJob.requirements || [])], perks: [...(editJob.perks || [])] } : blank);
@@ -456,13 +487,15 @@ function JobModal({ companies, editJob, defaultCompanyId, onSave, onClose }) {
   const addTag = () => { const t = ti.trim(); if (t && !form.skills.includes(t)) set("skills", [...form.skills, t]); setTi(""); };
   const parseList = txt => txt.split("\n").map(s => s.replace(/^[-•→]\s*/, "").trim()).filter(Boolean);
 
-  const save = () => {
+  const save = async () => {
     if (!form.title.trim() || !form.company_id) return alert("Company and title are required.");
     setBusy(true);
-    if (editJob) db.updateJob(editJob.id, form);
-    else db.addJob(form);
-    setBusy(false);
-    onSave();
+    try {
+      if (editJob) await db.updateJob(editJob.id, form);
+      else await db.addJob(form);
+      onSave();
+    } catch(err) { alert("Save failed: " + err.message); }
+    finally { setBusy(false); }
   };
 
   return (
@@ -470,7 +503,7 @@ function JobModal({ companies, editJob, defaultCompanyId, onSave, onClose }) {
       <div className="modal">
         <button className="mc" onClick={onClose}>×</button>
         <div className="mh">{editJob ? "Edit Job" : "Post a New Job"}</div>
-        <div className="ms">Fill in the role details. Skills and bullet fields are optional but help candidates.</div>
+        <div className="ms">Fill in the role details.</div>
         <div className="fg">
           <label className="lbl">Company</label>
           <select className="inp" value={form.company_id} onChange={e => set("company_id", e.target.value)}>
@@ -504,16 +537,16 @@ function JobModal({ companies, editJob, defaultCompanyId, onSave, onClose }) {
         <div className="fg"><label className="lbl">About This Role</label><textarea className="ta" rows={3} placeholder="2–3 sentences about the role." value={form.about} onChange={e => set("about", e.target.value)} /></div>
         <div className="fg">
           <label className="lbl">Responsibilities <span className="opt">(one per line)</span></label>
-          <div className="hint">Each line becomes a bullet point on the job page.</div>
-          <textarea className="ta" rows={4} placeholder={"Design and build Java microservices\nOwn performance and observability"} value={form.responsibilities.join("\n")} onChange={e => set("responsibilities", parseList(e.target.value))} />
+          <div className="hint">Each line becomes a bullet on the job page.</div>
+          <textarea className="ta" rows={4} value={form.responsibilities.join("\n")} onChange={e => set("responsibilities", parseList(e.target.value))} />
         </div>
         <div className="fg">
           <label className="lbl">Requirements <span className="opt">(one per line)</span></label>
-          <textarea className="ta" rows={4} placeholder={"4+ years Java\nDistributed systems knowledge"} value={form.requirements.join("\n")} onChange={e => set("requirements", parseList(e.target.value))} />
+          <textarea className="ta" rows={4} value={form.requirements.join("\n")} onChange={e => set("requirements", parseList(e.target.value))} />
         </div>
         <div className="fg">
           <label className="lbl">Perks <span className="opt">(one per line)</span></label>
-          <textarea className="ta" rows={3} placeholder={"ESOPs after 2 yrs\nHealth insurance"} value={form.perks.join("\n")} onChange={e => set("perks", parseList(e.target.value))} />
+          <textarea className="ta" rows={3} value={form.perks.join("\n")} onChange={e => set("perks", parseList(e.target.value))} />
         </div>
         <div style={{ display: "flex", gap: 9, marginTop: 8 }}>
           <button className="btn-p" style={{ flex: 1, justifyContent: "center" }} onClick={save} disabled={busy}>{busy ? "Saving…" : editJob ? "Save Changes" : "Post Job →"}</button>
@@ -524,21 +557,22 @@ function JobModal({ companies, editJob, defaultCompanyId, onSave, onClose }) {
   );
 }
 
-// ── COMPANY MODAL ──────────────────────────────────────────
 function CompanyModal({ editCo, onSave, onClose }) {
   const blank = { name: "", slug: "", color: "#0057ff", tagline: "" };
   const [form, setForm] = useState(editCo || blank);
   const [busy, setBusy] = useState(false);
   const set = (k, v) => setForm(p => ({ ...p, [k]: v }));
 
-  const save = () => {
+  const save = async () => {
     if (!form.name.trim() || !form.slug.trim()) return alert("Name and slug are required.");
     if (!/^[a-z0-9-]+$/.test(form.slug)) return alert("Slug: lowercase letters, numbers, hyphens only.");
     setBusy(true);
-    if (editCo) db.updateCompany(editCo.id, form);
-    else db.addCompany(form);
-    setBusy(false);
-    onSave();
+    try {
+      if (editCo) await db.updateCompany(editCo.id, form);
+      else await db.addCompany(form);
+      onSave();
+    } catch(err) { alert("Save failed: " + err.message); }
+    finally { setBusy(false); }
   };
 
   return (
@@ -551,7 +585,7 @@ function CompanyModal({ editCo, onSave, onClose }) {
         <div className="fg">
           <label className="lbl">URL Slug</label>
           <input className="inp" placeholder="e.g. tcs" value={form.slug} onChange={e => set("slug", e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ""))} />
-          <div style={{ fontSize: 11, color: "var(--muted)", marginTop: 3 }}>Candidates visit <strong>/careers/{form.slug || "slug"}</strong></div>
+          <div style={{ fontSize: 11, color: "var(--muted)", marginTop: 3 }}>Candidates visit <strong>yoursite.com/{form.slug || "slug"}</strong></div>
         </div>
         <div className="fg"><label className="lbl">Tagline</label><input className="inp" placeholder="e.g. Build the future with us." value={form.tagline} onChange={e => set("tagline", e.target.value)} /></div>
         <div className="fg">
@@ -570,19 +604,26 @@ function CompanyModal({ editCo, onSave, onClose }) {
   );
 }
 
-// ── ADMIN COMPANY VIEW ────────────────────────────────────
 function AdminCoView({ company, allCompanies, onRefresh }) {
-  const [jobs, setJobs] = useState(() => db.getJobs(company.id));
-  const [apps, setApps] = useState(() => db.getApplications(company.id));
+  const [jobs, setJobs] = useState([]);
+  const [apps, setApps] = useState([]);
   const [view, setView] = useState("jobs");
   const [showJobModal, setShowJobModal] = useState(false);
   const [editJob, setEditJob] = useState(null);
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  const refresh = () => { setJobs(db.getJobs(company.id)); setApps(db.getApplications(company.id)); onRefresh(); };
+  const refresh = useCallback(async () => {
+    setLoading(true);
+    const [j, a] = await Promise.all([db.getJobs(company.id), db.getApplications(company.id)]);
+    setJobs(j); setApps(a); setLoading(false);
+    onRefresh();
+  }, [company.id, onRefresh]);
 
-  const toggleActive = (job) => { db.updateJob(job.id, { active: !job.active }); refresh(); };
-  const delJob = (job) => { if (!window.confirm(`Delete "${job.title}"?`)) return; db.deleteJob(job.id); refresh(); };
+  useEffect(() => { refresh(); }, [refresh]);
+
+  const toggleActive = async (job) => { await db.updateJob(job.id, { active: !job.active }); refresh(); };
+  const delJob = async (job) => { if (!window.confirm(`Delete "${job.title}"?`)) return; await db.deleteJob(job.id); refresh(); };
 
   const filteredApps = apps.filter(a => {
     const q = search.toLowerCase();
@@ -607,7 +648,7 @@ function AdminCoView({ company, allCompanies, onRefresh }) {
       <div className="adm-top">
         <div>
           <div className="adm-title">{company.name}</div>
-          <div className="adm-sub2">{jobs.filter(j => j.active).length} active role{jobs.filter(j => j.active).length !== 1 ? "s" : ""} · {apps.length} application{apps.length !== 1 ? "s" : ""}</div>
+          <div className="adm-sub2">{jobs.filter(j => j.active).length} active · {apps.length} applications</div>
         </div>
         <div className="btns">
           {view === "jobs" && <button className="btn-p" onClick={() => { setEditJob(null); setShowJobModal(true); }}><Ic n="plus" s={13} /> Post Job</button>}
@@ -624,8 +665,7 @@ function AdminCoView({ company, allCompanies, onRefresh }) {
         <button className={`seg-b${view === "jobs" ? " active" : ""}`} onClick={() => setView("jobs")}>Jobs ({jobs.length})</button>
         <button className={`seg-b${view === "apps" ? " active" : ""}`} onClick={() => setView("apps")}>Applications ({apps.length})</button>
       </div>
-
-      {view === "jobs" ? (
+      {loading ? <div className="loading">Loading…</div> : view === "jobs" ? (
         jobs.length === 0
           ? <div className="empty"><div className="empty-ic">📋</div><p>No jobs yet. Post your first role.</p></div>
           : jobs.map(job => (
@@ -633,13 +673,10 @@ function AdminCoView({ company, allCompanies, onRefresh }) {
               <div className="jrow-body">
                 <div className="jrow-title">{job.title}</div>
                 <div className="jrow-meta">
-                  <span className="jrow-m">{job.location}</span>
-                  <span className="jrow-m">·</span>
-                  <span className="jrow-m">{job.experience}</span>
-                  <span className="jrow-m">·</span>
-                  <span className="jrow-m">{job.salary}</span>
-                  <span className="jrow-m">·</span>
-                  <span className="jrow-m">{apps.filter(a => a.job_id === job.id).length} applicant{apps.filter(a => a.job_id === job.id).length !== 1 ? "s" : ""}</span>
+                  <span className="jrow-m">{job.location}</span><span className="jrow-m">·</span>
+                  <span className="jrow-m">{job.experience}</span><span className="jrow-m">·</span>
+                  <span className="jrow-m">{job.salary}</span><span className="jrow-m">·</span>
+                  <span className="jrow-m">{apps.filter(a => a.job_id === job.id).length} applicants</span>
                 </div>
               </div>
               <div className="jrow-acts">
@@ -652,26 +689,24 @@ function AdminCoView({ company, allCompanies, onRefresh }) {
           ))
       ) : (
         <>
-          <div className="frow">
-            <input className="fi" placeholder="🔍  Search by name, phone, or email…" value={search} onChange={e => setSearch(e.target.value)} />
-          </div>
+          <div className="frow"><input className="fi" placeholder="🔍  Search by name, phone, or email…" value={search} onChange={e => setSearch(e.target.value)} /></div>
           {filteredApps.length === 0
             ? <div className="empty"><div className="empty-ic">📭</div><p>No applications yet.</p></div>
             : <div className="tbl"><table>
-              <thead><tr>{["ID", "Role", "Name", "Phone", "Email", "Exp", "Notice", "Curr", "Exp CTC", "CV", "Date"].map(h => <th key={h}>{h}</th>)}</tr></thead>
-              <tbody>{filteredApps.map(r => (
+              <thead><tr>{["ID","Role","Name","Phone","Email","Exp","Notice","Curr","Exp CTC","CV","Date"].map(h=><th key={h}>{h}</th>)}</tr></thead>
+              <tbody>{filteredApps.map(r=>(
                 <tr key={r.id}>
-                  <td style={{ fontFamily: "monospace", fontSize: 11, color: "var(--muted)" }}>{r.id}</td>
-                  <td style={{ fontWeight: 600, color: "var(--navy)", maxWidth: 140, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.job_title}</td>
-                  <td style={{ fontWeight: 600 }}>{r.name}</td>
+                  <td style={{fontFamily:"monospace",fontSize:11,color:"var(--muted)"}}>{r.id}</td>
+                  <td style={{fontWeight:600,color:"var(--navy)",maxWidth:140,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{r.job_title}</td>
+                  <td style={{fontWeight:600}}>{r.name}</td>
                   <td>{r.phone}</td>
-                  <td>{r.email || <span style={{ color: "#c0c8d8" }}>—</span>}</td>
-                  <td>{r.years_exp || "—"}</td>
-                  <td>{r.notice_period || "—"}</td>
-                  <td>{r.current_salary ? r.current_salary + "L" : "—"}</td>
-                  <td>{r.expected_salary ? r.expected_salary + "L" : "—"}</td>
-                  <td>{r.cv_filename ? <span style={{ color: "var(--accent)", fontSize: 12, fontWeight: 600 }}>📎</span> : <span style={{ color: "#c0c8d8" }}>—</span>}</td>
-                  <td style={{ whiteSpace: "nowrap", color: "var(--muted)" }}>{new Date(r.created_at).toLocaleDateString("en-IN", { day: "2-digit", month: "short" })}</td>
+                  <td>{r.email||<span style={{color:"#c0c8d8"}}>—</span>}</td>
+                  <td>{r.years_exp||"—"}</td>
+                  <td>{r.notice_period||"—"}</td>
+                  <td>{r.current_salary?r.current_salary+"L":"—"}</td>
+                  <td>{r.expected_salary?r.expected_salary+"L":"—"}</td>
+                  <td>{r.cv_filename?<span style={{color:"var(--accent)",fontSize:12,fontWeight:600}}>📎</span>:<span style={{color:"#c0c8d8"}}>—</span>}</td>
+                  <td style={{whiteSpace:"nowrap",color:"var(--muted)"}}>{new Date(r.created_at).toLocaleDateString("en-IN",{day:"2-digit",month:"short"})}</td>
                 </tr>
               ))}</tbody>
             </table></div>
@@ -682,7 +717,6 @@ function AdminCoView({ company, allCompanies, onRefresh }) {
   );
 }
 
-// ── ADMIN SHELL ────────────────────────────────────────────
 function AdminShell({ onExit }) {
   const [authed, setAuthed] = useState(false);
   const [pw, setPw] = useState(""); const [pwErr, setPwErr] = useState("");
@@ -692,22 +726,22 @@ function AdminShell({ onExit }) {
   const [editCo, setEditCo] = useState(null);
   const [appCounts, setAppCounts] = useState({});
   const [refreshKey, setRefreshKey] = useState(0);
+  const [loading, setLoading] = useState(false);
 
-  const load = useCallback(() => {
-    const cos = db.getCompanies();
+  const load = useCallback(async () => {
+    setLoading(true);
+    const cos = await db.getCompanies();
     setCompanies(cos);
     if (cos.length && !activeTab) setActiveTab(cos[0].id);
     const counts = {};
-    cos.forEach(c => { counts[c.id] = db.getApplications(c.id).length; });
+    await Promise.all(cos.map(async c => { const apps = await db.getApplications(c.id); counts[c.id] = apps.length; }));
     setAppCounts(counts);
+    setLoading(false);
   }, [activeTab]);
 
-  useEffect(() => { if (authed) load(); }, [authed, load, refreshKey]);
+  useEffect(() => { if (authed) load(); }, [authed, refreshKey]);
 
-  const login = () => {
-    if (pw === ADMIN_PASSWORD) { setAuthed(true); }
-    else setPwErr("Incorrect password.");
-  };
+  const login = () => { if (pw === ADMIN_PASSWORD) setAuthed(true); else setPwErr("Incorrect password."); };
 
   if (!authed) return (
     <div className="adm-login">
@@ -739,13 +773,15 @@ function AdminShell({ onExit }) {
       <div className="adm-shell">
         <aside className="adm-side">
           <div className="adm-side-lbl">Companies</div>
-          {companies.map(c => (
-            <button key={c.id} className={`co-tab${activeTab === c.id ? " active" : ""}`} onClick={() => setActiveTab(c.id)}>
-              <span className="co-logo" style={{ background: c.color + "cc" }}>{c.logo || c.name.charAt(0)}</span>
-              <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.name}</span>
-              {appCounts[c.id] > 0 && <span className="co-cnt">{appCounts[c.id]}</span>}
-            </button>
-          ))}
+          {loading ? <div style={{color:"rgba(255,255,255,.3)",fontSize:12,padding:"12px 18px"}}>Loading…</div> :
+            companies.map(c => (
+              <button key={c.id} className={`co-tab${activeTab === c.id ? " active" : ""}`} onClick={() => setActiveTab(c.id)}>
+                <span className="co-logo" style={{ background: c.color + "cc" }}>{c.logo || c.name.charAt(0)}</span>
+                <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{c.name}</span>
+                {appCounts[c.id] > 0 && <span className="co-cnt">{appCounts[c.id]}</span>}
+              </button>
+            ))
+          }
           <div className="sep" />
           <button className="side-action" onClick={() => { setEditCo(null); setShowCoModal(true); }}><Ic n="plus" s={12} /> Add Company</button>
           {activeCo && <button className="side-action" onClick={() => { setEditCo(activeCo); setShowCoModal(false); }}><Ic n="edit" s={12} /> Edit Company</button>}
@@ -762,28 +798,29 @@ function AdminShell({ onExit }) {
   );
 }
 
-// ── ROOT ───────────────────────────────────────────────────
 export default function App() {
-  const [page, setPage] = useState("home"); // home | company | admin
+  const [page, setPage] = useState("home");
   const [company, setCompany] = useState(null);
-  const [subPage, setSubPage] = useState("landing"); // landing | jd | form | success
+  const [subPage, setSubPage] = useState("landing");
   const [jobs, setJobs] = useState([]);
   const [selJob, setSelJob] = useState(null);
   const [successData, setSuccessData] = useState(null);
+  const [companies, setCompanies] = useState([]);
+  const [homeLoading, setHomeLoading] = useState(true);
 
-  const goCompany = (co) => {
-    const js = db.getJobs(co.id);
+  useEffect(() => {
+    db.getCompanies().then(cos => { setCompanies(cos); setHomeLoading(false); });
+  }, []);
+
+  const goCompany = async (co) => {
+    const js = await db.getJobs(co.id);
     setCompany(co); setJobs(js); setSubPage("landing"); setSelJob(null); setSuccessData(null);
     setPage("company");
   };
 
-  const companies = db.getCompanies();
-
   return (
     <>
       <style>{CSS}</style>
-
-      {/* NAV */}
       <nav className="nav">
         <button className="nav-brand" onClick={() => setPage("home")}>
           <div className="nav-logo" style={{ background: page === "company" && company ? `linear-gradient(135deg,${company.color},${company.color}99)` : "linear-gradient(135deg,#0057ff,#00c2ff)" }}>
@@ -800,7 +837,6 @@ export default function App() {
         </div>
       </nav>
 
-      {/* HOME */}
       {page === "home" && (
         <>
           <div style={{ maxWidth: 760, margin: "56px auto", padding: "0 20px", textAlign: "center" }}>
@@ -808,38 +844,35 @@ export default function App() {
               One Portal,{" "}
               <em style={{ fontStyle: "italic", background: "linear-gradient(90deg,var(--accent),var(--a2))", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Many Companies</em>
             </div>
-            <p style={{ color: "var(--muted)", fontSize: 15, marginBottom: 40, lineHeight: 1.65 }}>
-              Each company has its own branded careers page. Add companies and post jobs from the admin panel.
-            </p>
-            {companies.length === 0
-              ? <div className="empty"><div className="empty-ic">🏢</div><p>No companies yet. <button onClick={() => setPage("admin")} style={{ color: "var(--accent)", background: "none", border: "none", cursor: "pointer", fontWeight: 600, fontSize: 14 }}>Go to admin →</button></p></div>
-              : <div className="dir-grid">
-                {companies.map(c => (
-                  <div key={c.id} className="dir-card" onClick={() => goCompany(c)}>
-                    <div className="dir-logo" style={{ background: `linear-gradient(135deg,${c.color},${c.color}99)` }}>{c.logo}</div>
-                    <div><div className="dir-name">{c.name}</div><div className="dir-slug">/{c.slug}</div></div>
-                    <div className="dir-link" style={{ color: c.color }}>View openings →</div>
-                  </div>
-                ))}
-              </div>
+            <p style={{ color: "var(--muted)", fontSize: 15, marginBottom: 40, lineHeight: 1.65 }}>Each company has its own branded careers page. Add companies and post jobs from the admin panel.</p>
+            {homeLoading ? <div className="loading">Loading companies…</div> :
+              companies.length === 0
+                ? <div className="empty"><div className="empty-ic">🏢</div><p>No companies yet. <button onClick={() => setPage("admin")} style={{ color: "var(--accent)", background: "none", border: "none", cursor: "pointer", fontWeight: 600, fontSize: 14 }}>Go to admin →</button></p></div>
+                : <div className="dir-grid">
+                  {companies.map(c => (
+                    <div key={c.id} className="dir-card" onClick={() => goCompany(c)}>
+                      <div className="dir-logo" style={{ background: `linear-gradient(135deg,${c.color},${c.color}99)` }}>{c.logo}</div>
+                      <div><div className="dir-name">{c.name}</div><div className="dir-slug">/{c.slug}</div></div>
+                      <div className="dir-link" style={{ color: c.color }}>View openings →</div>
+                    </div>
+                  ))}
+                </div>
             }
           </div>
           <footer className="footer">© 2025 <strong>Recruit Portal</strong> · All Rights Reserved</footer>
         </>
       )}
 
-      {/* COMPANY FLOW */}
       {page === "company" && company && (
         <>
           {subPage === "landing" && <Landing company={company} jobs={jobs} onJob={j => { setSelJob(j); setSubPage("jd"); }} />}
           {subPage === "jd" && selJob && <JDPage company={company} job={selJob} onApply={() => setSubPage("form")} onBack={() => setSubPage("landing")} />}
           {subPage === "form" && selJob && <RegForm company={company} job={selJob} onSuccess={d => { setSuccessData(d); setSubPage("success"); }} onBack={() => setSubPage("jd")} />}
-          {subPage === "success" && successData && <Success data={successData} company={company} onHome={() => { setSubPage("landing"); setSelJob(null); setSuccessData(null); }} />}
+          {subPage === "success" && successData && <SuccessPage data={successData} onHome={() => { setSubPage("landing"); setSelJob(null); setSuccessData(null); }} />}
           <footer className="footer">© 2025 <strong>{company.name}</strong> · Powered by Recruit Portal</footer>
         </>
       )}
 
-      {/* ADMIN */}
       {page === "admin" && (
         <>
           <AdminShell onExit={() => setPage("home")} />
