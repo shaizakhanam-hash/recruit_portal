@@ -203,18 +203,18 @@ body{
 
 /* ── COMPANY MARQUEE ── */
 .marquee-wrap{
-  background:rgba(255,255,255,.04);
+  background:#0D1117;
   border-top:1px solid rgba(255,255,255,.07);
   border-bottom:1px solid rgba(255,255,255,.07);
-  padding:18px 0;
+  padding:20px 0;
   overflow:hidden;
   position:relative;
 }
 .marquee-wrap::before,.marquee-wrap::after{
-  content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2;
+  content:'';position:absolute;top:0;bottom:0;width:100px;z-index:2;pointer-events:none;
 }
-.marquee-wrap::before{left:0;background:linear-gradient(90deg,#0a0d14,transparent)}
-.marquee-wrap::after{right:0;background:linear-gradient(270deg,#0a0d14,transparent)}
+.marquee-wrap::before{left:0;background:linear-gradient(90deg,#0D1117 0%,transparent 100%)}
+.marquee-wrap::after{right:0;background:linear-gradient(270deg,#0D1117 0%,transparent 100%)}
 .marquee-track{
   display:flex;align-items:center;gap:48px;
   width:max-content;
@@ -228,17 +228,15 @@ body{
 .co-badge{
   display:flex;align-items:center;gap:9px;
   background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.1);
   border-radius:var(--r-full);
-  padding:7px 16px 7px 10px;
+  padding:10px 20px;
   white-space:nowrap;flex-shrink:0;
+  transition:background .2s;
 }
-.co-badge-logo{
-  width:26px;height:26px;border-radius:6px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:10px;font-weight:800;color:#fff;flex-shrink:0;
-}
-.co-badge-name{font-size:12px;font-weight:700;color:rgba(255,255,255,.75);letter-spacing:.2px}
+.co-badge:hover{background:rgba(255,255,255,.1)}
+.co-badge-logo{display:none}
+.co-badge-name{font-size:13px;font-weight:600;color:rgba(255,255,255,.85);letter-spacing:.2px}
 
 /* ── JOB CARD ── */
 .jcard{
@@ -1114,18 +1112,18 @@ function AdminPanel() {
 
 // ── COMPANY MARQUEE ──────────────────────────────────────
 const MARQUEE_COS = [
-  { name:"HCL Technologies", color:"#1A56FF" },
-  { name:"Amazon",           color:"#FF9900" },
-  { name:"Genpact",          color:"#E31B8F" },
-  { name:"Cvent",            color:"#00A1E0" },
-  { name:"Infosys",          color:"#007CC2" },
-  { name:"Wipro",            color:"#341C6B" },
-  { name:"TCS",              color:"#1A3A6B" },
-  { name:"Accenture",        color:"#A100FF" },
-  { name:"Capgemini",        color:"#0070AD" },
-  { name:"Cognizant",        color:"#1263A0" },
-  { name:"IBM",              color:"#006699" },
-  { name:"Microsoft",        color:"#00A4EF" },
+  { name:"HCL Technologies", logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/HCL_Technologies_logo.svg/320px-HCL_Technologies_logo.svg.png" },
+  { name:"Amazon",           logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/320px-Amazon_logo.svg.png" },
+  { name:"Genpact",          logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Genpact_logo.svg/320px-Genpact_logo.svg.png" },
+  { name:"Cvent",            logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Cvent_logo.svg/320px-Cvent_logo.svg.png" },
+  { name:"Infosys",          logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Infosys_logo.svg/320px-Infosys_logo.svg.png" },
+  { name:"Wipro",            logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Wipro_Primary_Logo_Color_RGB.svg/320px-Wipro_Primary_Logo_Color_RGB.svg.png" },
+  { name:"TCS",              logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Tata_Consultancy_Services_Logo.svg/320px-Tata_Consultancy_Services_Logo.svg.png" },
+  { name:"Accenture",        logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Accenture.svg/320px-Accenture.svg.png" },
+  { name:"Capgemini",        logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Capgemini_201x_logo.svg/320px-Capgemini_201x_logo.svg.png" },
+  { name:"Cognizant",        logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Cognizant_logo_2022.svg/320px-Cognizant_logo_2022.svg.png" },
+  { name:"IBM",              logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/IBM_logo.svg/320px-IBM_logo.svg.png" },
+  { name:"Microsoft",        logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Microsoft_logo_%282012%29.svg/320px-Microsoft_logo_%282012%29.svg.png" },
 ];
 
 function CompanyMarquee() {
@@ -1135,10 +1133,13 @@ function CompanyMarquee() {
       <div className="marquee-track">
         {doubled.map((co, i) => (
           <div key={i} className="co-badge">
-            <div className="co-badge-logo" style={{background:co.color}}>
-              {co.name.charAt(0)}
-            </div>
-            <span className="co-badge-name">{co.name}</span>
+            <img
+              src={co.logo}
+              alt={co.name}
+              style={{height:22,width:"auto",maxWidth:90,objectFit:"contain",filter:"brightness(0) invert(1)",opacity:.85}}
+              onError={e=>{ e.target.style.display="none"; e.target.nextSibling.style.display="inline"; }}
+            />
+            <span style={{display:"none",fontSize:12,fontWeight:700,color:"rgba(255,255,255,.8)"}}>{co.name}</span>
           </div>
         ))}
       </div>
