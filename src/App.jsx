@@ -862,7 +862,7 @@ function ApplyModal({ job, onClose }) {
           </div>
           <div className="fg">
             <label className="lb">Mobile Number</label>
-            <input className={`inp${errs.phone?" er":""}`} placeholder="10-digit mobile" value={f.phone} onChange={e=>{set("phone",e.target.value);clr("phone")}} />
+            <input className={`inp${errs.phone?" er":""}`} placeholder="10-digit mobile" value={f.phone} maxLength={10} inputMode="numeric" onChange={e=>{set("phone",e.target.value.replace(/\D/g,"").slice(0,10));clr("phone")}} />
             {errs.phone&&<div className="et">{errs.phone}</div>}
           </div>
         </div>
