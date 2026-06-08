@@ -1087,9 +1087,9 @@ function Portal() {
         <p className="hero-sub">Handpicked opportunities from India's top companies — vetted, high-growth, and ready to move fast.</p>
         <div className="hero-stats">
           <div className="hstat"><div className="hstat-n">{jobs.length}</div><div className="hstat-l">Open Roles</div></div>
-          <div className="hstat"><div className="hstat-n">2 Days</div><div className="hstat-l">Response Time</div></div>
-          <div className="hstat"><div className="hstat-n">Top Co.</div><div className="hstat-l">Only MNCs</div></div>
-          <div className="hstat"><div className="hstat-n">Direct</div><div className="hstat-l">No Agency</div></div>
+          
+          <div className="hstat"><div className="hstat-n">Top Roles</div><div className="hstat-l">Leading Companies</div></div>
+          <div className="hstat"><div className="hstat-n">Direct Calls</div><div className="hstat-l">From HR Managers</div></div>
         </div>
       </section>
 
