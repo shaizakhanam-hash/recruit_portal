@@ -302,7 +302,10 @@ body{
   width:100%;max-width:660px;
   box-shadow:var(--el-modal);
   animation:slideUp .2s ease;
-  margin:auto;overflow:hidden;
+  margin:auto;
+  overflow:hidden;
+  display:flex;flex-direction:column;
+  max-height:90vh;
 }
 @keyframes slideUp{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
 
@@ -354,7 +357,7 @@ body{
   padding:3px 10px;border-radius:var(--r-full);
 }
 
-.jd-body{padding:24px 28px}
+.jd-body{padding:24px 28px;overflow-y:auto;flex:1}
 .jd-sec{margin-bottom:24px}
 .jd-sec-title{
   font-size:11px;font-weight:700;color:var(--content-muted);
@@ -371,6 +374,7 @@ body{
   border-top:1px solid var(--stroke-default);
   display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
   background:var(--surface-subtle);
+  flex-shrink:0;
 }
 .jd-apply-btn{
   background:var(--neutral-black);color:#FFFFFF;
