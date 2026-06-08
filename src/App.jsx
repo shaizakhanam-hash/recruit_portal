@@ -187,7 +187,7 @@ body{
   border-right:1px solid rgba(255,255,255,.08);
 }
 .hstat:last-child{border:none}
-.hstat-n{font-size:24px;font-weight:800;color:#FFFFFF;line-height:1;letter-spacing:-.5px}
+.hstat-n{font-size:24px;font-weight:800;color:#C9970D;line-height:1;letter-spacing:-.5px}
 .hstat-l{font-size:10px;font-weight:600;color:rgba(255,255,255,.4);margin-top:5px;letter-spacing:.4px;text-transform:uppercase;line-height:1.4}
 
 /* ── JOBS SECTION ── */
@@ -1184,7 +1184,7 @@ function Portal() {
       </header>
 
       <section className="hero">
-        <div className="hero-eyebrow"><span className="hero-dot"/>Senior &amp; Lead Roles · Invite Only</div>
+        <div className="hero-eyebrow"><span className="hero-dot"/>Senior &amp; Lead Roles</div>
         <h1>Where Top Engineers<br /><em>Get Headhunted</em></h1>
         <p className="hero-sub">Curated high-impact roles in software engineering — mid to senior level. No applications lost in a void. Hiring managers call you directly.</p>
         <div className="hero-stats">
