@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 
-// ── CONFIG ────────────────────────────────────────────────
 const SUPABASE_URL = "https://rbwluolctwcyqxixisfb.supabase.co";
 const SUPABASE_KEY = "sb_publishable_ZkfyWoc2f-ZMFC7ByX0ANg_OTe5yLP8";
-const ADMIN_PASSWORD = "shine@admin2025";
+const ADMIN_PASSWORD = "shine@admin2026";
 
 let _sb = null;
 async function sb() {
@@ -11,6 +10,13 @@ async function sb() {
   const { createClient } = await import("https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm");
   _sb = createClient(SUPABASE_URL, SUPABASE_KEY);
   return _sb;
+}
+
+// ── ROUTING: check URL path ───────────────────────────────
+function getRoute() {
+  const path = window.location.pathname;
+  if (path === "/admin" || path === "/admin/") return "admin";
+  return "portal";
 }
 
 // ── SHINE LOGO ────────────────────────────────────────────
@@ -27,7 +33,6 @@ const ShineLogo = ({ height = 28 }) => (
   </svg>
 );
 
-// ── STYLES ────────────────────────────────────────────────
 const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -37,19 +42,13 @@ body{font-family:'Inter',sans-serif;background:#0a0d14;color:#e2e8f0;min-height:
   --bg:#0a0d14;--bg2:#0f1320;--card:#131929;--card2:#1a2236;
   --border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.12);
   --muted:#8892a4;--accent:#1a56ff;--accent2:#faca22;
-  --green:#00d68f;--red:#ff4d6d;--r:12px;
-  --sh:0 4px 24px rgba(0,0,0,.4);
+  --green:#00d68f;--red:#ff4d6d;--r:12px;--sh:0 4px 24px rgba(0,0,0,.4);
 }
-/* HEADER */
 .hdr{background:rgba(10,13,20,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
 .hdr-left{display:flex;align-items:center;gap:20px}
 .hdr-div{width:1px;height:28px;background:var(--border2)}
 .hdr-tag{font-size:12px;color:var(--muted)}.hdr-tag span{color:var(--accent2);font-weight:600}
-.hdr-right{display:flex;align-items:center;gap:10px}
 .hdr-count{background:rgba(26,86,255,.15);border:1px solid rgba(26,86,255,.3);color:#7aa2ff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px}
-.hdr-adm{background:rgba(255,255,255,.06);border:1px solid var(--border2);color:rgba(255,255,255,.5);font-size:12px;font-weight:600;padding:6px 14px;border-radius:7px;cursor:pointer;font-family:inherit;transition:all .2s}
-.hdr-adm:hover{background:rgba(255,255,255,.1);color:#fff}
-/* HERO */
 .hero{padding:64px 24px 56px;text-align:center;background:radial-gradient(ellipse at 50% 0%,rgba(26,86,255,.18) 0%,transparent 65%);border-bottom:1px solid var(--border)}
 .hero-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(26,86,255,.12);border:1px solid rgba(26,86,255,.25);color:#7aa2ff;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:5px 14px;border-radius:20px;margin-bottom:22px}
 .blink{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;animation:blink 1.8s infinite}
@@ -62,7 +61,6 @@ body{font-family:'Inter',sans-serif;background:#0a0d14;color:#e2e8f0;min-height:
 .hs:last-child{border:none}
 .hs-n{font-size:20px;font-weight:800;color:#fff}
 .hs-l{font-size:11px;color:var(--muted);margin-top:2px}
-/* JOBS */
 .wrap{max-width:860px;margin:0 auto;padding:44px 20px 60px}
 .jh{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:10px}
 .jh-t{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px}
@@ -88,7 +86,6 @@ body{font-family:'Inter',sans-serif;background:#0a0d14;color:#e2e8f0;min-height:
 .empty-jobs{text-align:center;padding:60px 20px;color:var(--muted)}
 .empty-ic{font-size:44px;margin-bottom:12px}
 .loading{text-align:center;padding:60px;color:var(--muted);font-size:15px}
-/* MODAL */
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(4px);z-index:200;display:flex;align-items:center;justify-content:center;padding:16px;animation:fi .2s ease}
 @keyframes fi{from{opacity:0}to{opacity:1}}
 .modal{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:34px;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;box-shadow:0 32px 80px rgba(0,0,0,.7);animation:su .22s ease;position:relative}
@@ -122,11 +119,10 @@ body{font-family:'Inter',sans-serif;background:#0a0d14;color:#e2e8f0;min-height:
 .sbtn{width:100%;background:linear-gradient(135deg,var(--accent),#4d7fff);color:#fff;border:none;cursor:pointer;font-size:15px;font-weight:700;padding:14px;border-radius:10px;font-family:inherit;margin-top:10px;transition:all .2s}
 .sbtn:hover:not(:disabled){transform:translateY(-2px);box-shadow:0 10px 28px rgba(26,86,255,.5)}
 .sbtn:disabled{opacity:.5;cursor:not-allowed}
-/* SUCCESS */
 .suc{text-align:center;padding:10px 0}
 .sic{font-size:62px;display:block;margin-bottom:14px;animation:pop .4s ease}
 @keyframes pop{0%{transform:scale(.3);opacity:0}80%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
-.sh{font-size:26px;font-weight:800;color:#fff;margin-bottom:7px;letter-spacing:-.5px}
+.sh2{font-size:26px;font-weight:800;color:#fff;margin-bottom:7px;letter-spacing:-.5px}
 .sp{font-size:14px;color:var(--muted);line-height:1.65;margin-bottom:22px}
 .sbox{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:20px;text-align:left}
 .sr{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border)}
@@ -141,7 +137,7 @@ body{font-family:'Inter',sans-serif;background:#0a0d14;color:#e2e8f0;min-height:
 .adm-ico{font-size:40px;margin-bottom:14px}
 .adm-h{font-size:24px;font-weight:800;color:#fff;margin-bottom:6px}
 .adm-s{font-size:14px;color:var(--muted);margin-bottom:24px}
-.adm-wrap{max-width:900px;margin:0 auto;padding:32px 20px 60px}
+.adm-wrap{max-width:940px;margin:0 auto;padding:32px 20px 60px}
 .adm-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14px;margin-bottom:28px}
 .adm-title{font-size:24px;font-weight:800;color:#fff}
 .adm-sub{font-size:13px;color:var(--muted);margin-top:3px}
@@ -190,12 +186,20 @@ tr:hover td{background:rgba(255,255,255,.02)}
 .tag-x{display:flex;align-items:center;gap:4px;background:rgba(26,86,255,.15);border:1px solid rgba(26,86,255,.3);color:#7aa2ff;font-size:12px;font-weight:600;padding:3px 9px;border-radius:20px;cursor:pointer}
 .tag-x:hover{background:rgba(255,77,109,.15);color:var(--red);border-color:rgba(255,77,109,.3)}
 .tags-row{display:flex;gap:7px;margin-bottom:5px}
-/* FOOTER */
+/* JD PASTE BOX */
+.jd-box{background:rgba(250,202,34,.05);border:1.5px solid rgba(250,202,34,.2);border-radius:12px;padding:20px;margin-bottom:22px}
+.jd-box-title{font-size:12px;font-weight:700;color:var(--accent2);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.jd-box-sub{font-size:12px;color:var(--muted);margin-bottom:10px}
+.parse-btn{background:linear-gradient(135deg,#b8860b,var(--accent2));color:#0a0d14;border:none;cursor:pointer;font-size:13px;font-weight:800;padding:10px 20px;border-radius:8px;font-family:inherit;transition:all .2s;display:flex;align-items:center;gap:7px;margin-top:10px}
+.parse-btn:hover:not(:disabled){filter:brightness(1.1);transform:translateY(-1px)}
+.parse-btn:disabled{opacity:.5;cursor:not-allowed}
+.parse-status{font-size:12px;margin-top:8px;padding:8px 12px;border-radius:7px}
+.parse-ok{background:rgba(0,214,143,.1);border:1px solid rgba(0,214,143,.25);color:var(--green)}
+.parse-err{background:rgba(255,77,109,.1);border:1px solid rgba(255,77,109,.25);color:var(--red)}
 .footer{border-top:1px solid var(--border);padding:26px 24px;display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap}
 .ft{font-size:12px;color:rgba(255,255,255,.2)}
 `;
 
-// ── ICONS ─────────────────────────────────────────────────
 const Ic = ({ n, s = 13 }) => {
   const p = {
     loc: <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>,
@@ -206,6 +210,7 @@ const Ic = ({ n, s = 13 }) => {
     edit: <><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></>,
     trash: <><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/></>,
     dl: <><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></>,
+    spark: <><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></>,
   };
   return <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{p[n]}</svg>;
 };
@@ -254,7 +259,7 @@ function ApplyModal({ job, onClose }) {
       }]);
       if (error) throw error;
       setDone({ ...f, id, job_title: job.title });
-    } catch(err) { alert("Failed to submit. Please try again."); console.error(err); }
+    } catch(err) { alert("Failed. Please try again."); console.error(err); }
     finally { setBusy(false); }
   };
 
@@ -264,7 +269,7 @@ function ApplyModal({ job, onClose }) {
         <button className="mcl" onClick={onClose}>×</button>
         <div className="suc">
           <span className="sic">🎉</span>
-          <div className="sh">You're Registered!</div>
+          <div className="sh2">You're Registered!</div>
           <p className="sp">Our team will reach out within 2 business days.</p>
           <div className="sbox">
             {[["Application ID",<span className="idp">{done.id}</span>],["Name",done.name],["Phone",done.phone],done.email&&["Email",done.email],["Applied For",done.job_title]].filter(Boolean).map(([k,v])=>(
@@ -347,14 +352,68 @@ function ApplyModal({ job, onClose }) {
   );
 }
 
-// ── JOB FORM MODAL (Admin) ────────────────────────────────
+// ── JOB FORM MODAL with AI JD Parser ─────────────────────
 function JobFormModal({ editJob, onSave, onClose }) {
   const blank = { title:"", company:"", location:"", type:"Full-time", experience:"", salary:"", tags:[], summary:"" };
   const [form, setForm] = useState(editJob ? { ...editJob, tags:[...(editJob.tags||[])] } : blank);
   const [ti, setTi] = useState("");
   const [busy, setBusy] = useState(false);
+  const [jdText, setJdText] = useState("");
+  const [parsing, setParsing] = useState(false);
+  const [parseMsg, setParseMsg] = useState(null);
   const set = (k,v) => setForm(p=>({...p,[k]:v}));
   const addTag = () => { const t=ti.trim(); if(t&&!form.tags.includes(t)) set("tags",[...form.tags,t]); setTi(""); };
+
+  const parseJD = async () => {
+    if (!jdText.trim()) return alert("Paste a JD first.");
+    setParsing(true); setParseMsg(null);
+    try {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 1000,
+          messages: [{
+            role: "user",
+            content: `You are a job description parser. Extract information from this JD and return ONLY a valid JSON object with these exact keys:
+- title: job title (string)
+- company: company name if mentioned, else "Leading Company" (string)
+- location: city/location (string)
+- type: one of "Full-time", "Remote", "Hybrid", "Contract" (string)
+- experience: experience required e.g. "3-6 yrs" (string)
+- salary: salary range if mentioned e.g. "₹15-25 LPA", else "" (string)
+- tags: array of up to 6 key skills (array of strings)
+- summary: 2-sentence compelling summary of the role for candidates (string)
+
+JD:
+${jdText}
+
+Return ONLY the JSON object, no markdown, no explanation.`
+          }]
+        })
+      });
+      const data = await res.json();
+      const text = data.content?.[0]?.text || "";
+      const clean = text.replace(/```json|```/g,"").trim();
+      const parsed = JSON.parse(clean);
+      setForm(prev => ({
+        ...prev,
+        title: parsed.title || prev.title,
+        company: parsed.company || prev.company,
+        location: parsed.location || prev.location,
+        type: parsed.type || prev.type,
+        experience: parsed.experience || prev.experience,
+        salary: parsed.salary || prev.salary,
+        tags: parsed.tags || prev.tags,
+        summary: parsed.summary || prev.summary,
+      }));
+      setParseMsg({ ok: true, text: "✓ JD parsed successfully — review and edit below before posting." });
+    } catch(err) {
+      console.error(err);
+      setParseMsg({ ok: false, text: "Parse failed. Fill in the fields manually below." });
+    } finally { setParsing(false); }
+  };
 
   const save = async () => {
     if (!form.title.trim()) return alert("Job title is required.");
@@ -373,10 +432,25 @@ function JobFormModal({ editJob, onSave, onClose }) {
 
   return (
     <div className="ov" onClick={e=>e.target===e.currentTarget&&onClose()}>
-      <div className="modal">
+      <div className="modal" style={{maxWidth:600}}>
         <button className="mcl" onClick={onClose}>×</button>
         <div className="mh">{editJob?"Edit Job":"Post New Job"}</div>
-        <div className="ms" style={{marginBottom:20}}>Fill in the details below.</div>
+        <div className="ms" style={{marginBottom:20}}>Paste a JD to auto-fill, or fill in manually below.</div>
+
+        {/* AI JD PARSER */}
+        {!editJob && (
+          <div className="jd-box">
+            <div className="jd-box-title"><Ic n="spark" s={13}/>AI JD Parser</div>
+            <div className="jd-box-sub">Paste your full job description and Claude will extract all the details automatically.</div>
+            <textarea className="ta" rows={5} placeholder="Paste full job description here…" value={jdText} onChange={e=>setJdText(e.target.value)} />
+            <button className="parse-btn" onClick={parseJD} disabled={parsing||!jdText.trim()}>
+              <Ic n="spark" s={14}/>{parsing?"Parsing JD…":"Parse with AI →"}
+            </button>
+            {parseMsg && <div className={`parse-status ${parseMsg.ok?"parse-ok":"parse-err"}`}>{parseMsg.text}</div>}
+          </div>
+        )}
+
+        <div className="fl" style={{marginTop:4}}>Job Details {!editJob&&<span style={{color:"var(--muted)",fontWeight:400,textTransform:"none",letterSpacing:0}}>— review and edit parsed fields</span>}</div>
         <div className="fg"><label className="lb">Job Title</label><input className="inp" placeholder="e.g. Senior Software Engineer" value={form.title} onChange={e=>set("title",e.target.value)} /></div>
         <div className="r2">
           <div className="fg"><label className="lb">Company</label><input className="inp" placeholder="e.g. Leading MNC" value={form.company} onChange={e=>set("company",e.target.value)} /></div>
@@ -401,8 +475,8 @@ function JobFormModal({ editJob, onSave, onClose }) {
           </div>
         </div>
         <div className="fg">
-          <label className="lb">Job Summary</label>
-          <div className="hint">2–3 sentences shown on the card.</div>
+          <label className="lb">Job Summary <span className="op">(shown on card)</span></label>
+          <div className="hint">2–3 sentences that appear on the job listing card.</div>
           <textarea className="ta" rows={3} placeholder="Describe the role and team..." value={form.summary} onChange={e=>set("summary",e.target.value)} />
         </div>
         <div style={{display:"flex",gap:9,marginTop:8}}>
@@ -415,7 +489,7 @@ function JobFormModal({ editJob, onSave, onClose }) {
 }
 
 // ── ADMIN PANEL ───────────────────────────────────────────
-function AdminPanel({ onExit }) {
+function AdminPanel() {
   const [authed, setAuthed] = useState(false);
   const [pw, setPw] = useState(""); const [pwErr, setPwErr] = useState("");
   const [jobs, setJobs] = useState([]);
@@ -437,7 +511,10 @@ function AdminPanel({ onExit }) {
     setLoading(false);
   };
 
-  const login = () => { if (pw===ADMIN_PASSWORD) { setAuthed(true); load(); } else setPwErr("Incorrect password."); };
+  const login = () => {
+    if (pw===ADMIN_PASSWORD) { setAuthed(true); load(); }
+    else setPwErr("Incorrect password.");
+  };
 
   const toggleActive = async (job) => {
     const s = await sb();
@@ -452,32 +529,32 @@ function AdminPanel({ onExit }) {
     load();
   };
 
-  const downloadCSV = () => {
-    const cols = ["id","job_title","name","phone","email","years_exp","notice_period","current_salary","expected_salary","cv_filename","created_at"];
-    const hdr = cols.join(",");
-    const rows = filteredApps.map(r => cols.map(c=>`"${(r[c]??"").toString().replace(/"/g,'""')}"`).join(",")).join("\n");
-    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([hdr+"\n"+rows],{type:"text/csv"}));
-    a.download = `shine-applications-${new Date().toISOString().slice(0,10)}.csv`; a.click();
-  };
-
   const filteredApps = apps.filter(a => {
     const q = search.toLowerCase();
     return !q || a.name?.toLowerCase().includes(q) || a.phone?.includes(q) || a.email?.toLowerCase().includes(q);
   });
+
+  const downloadCSV = () => {
+    const cols = ["id","job_title","name","phone","email","years_exp","notice_period","current_salary","expected_salary","cv_filename","created_at"];
+    const hdr = cols.join(",");
+    const rows = filteredApps.map(r=>cols.map(c=>`"${(r[c]??"").toString().replace(/"/g,'""')}"`).join(",")).join("\n");
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([hdr+"\n"+rows],{type:"text/csv"}));
+    a.download = `shine-applications-${new Date().toISOString().slice(0,10)}.csv`; a.click();
+  };
 
   if (!authed) return (
     <div className="adm-login">
       <div className="adm-card">
         <div className="adm-ico">🔐</div>
         <div className="adm-h">Admin Access</div>
-        <div className="adm-s">Enter password to manage jobs and view applications.</div>
+        <div className="adm-s">Manage jobs and view applications.</div>
         <div className="fg">
           <input className={`inp${pwErr?" er":""}`} type="password" placeholder="Password" value={pw} onChange={e=>{setPw(e.target.value);setPwErr("")}} onKeyDown={e=>e.key==="Enter"&&login()} />
           {pwErr&&<div className="et">{pwErr}</div>}
         </div>
         <button className="sbtn" onClick={login}>Login →</button>
         <div style={{marginTop:16,textAlign:"center"}}>
-          <button onClick={onExit} style={{background:"none",border:"none",color:"var(--muted)",cursor:"pointer",fontSize:13,fontFamily:"inherit"}}>← Back to portal</button>
+          <a href="/" style={{color:"var(--muted)",fontSize:13,textDecoration:"none"}}>← Back to portal</a>
         </div>
       </div>
     </div>
@@ -486,18 +563,20 @@ function AdminPanel({ onExit }) {
   return (
     <>
       {(showForm||editJob) && (
-        <JobFormModal editJob={editJob} onSave={()=>{setShowForm(false);setEditJob(null);load();}} onClose={()=>{setShowForm(false);setEditJob(null);}} />
+        <JobFormModal editJob={editJob}
+          onSave={()=>{setShowForm(false);setEditJob(null);load();}}
+          onClose={()=>{setShowForm(false);setEditJob(null);}} />
       )}
       <div className="adm-wrap">
         <div className="adm-top">
           <div>
             <div className="adm-title">Admin Dashboard</div>
-            <div className="adm-sub">{jobs.filter(j=>j.active).length} live jobs · {apps.length} applications</div>
+            <div className="adm-sub">{jobs.filter(j=>j.active).length} live jobs · {apps.length} applications total</div>
           </div>
           <div className="btns">
             {view==="jobs" && <button className="btn-p" onClick={()=>{setEditJob(null);setShowForm(true)}}><Ic n="plus" s={13}/> Post Job</button>}
             {view==="apps" && <button className="btn-g" onClick={downloadCSV}><Ic n="dl" s={13}/> Download CSV</button>}
-            <button className="btn-gh" onClick={onExit}>← Portal</button>
+            <a href="/" className="btn-gh" style={{textDecoration:"none",display:"flex",alignItems:"center"}}>← View Portal</a>
           </div>
         </div>
 
@@ -515,7 +594,7 @@ function AdminPanel({ onExit }) {
 
         {loading ? <div className="loading">Loading…</div> : view==="jobs" ? (
           jobs.length===0
-            ? <div className="empty-jobs"><div className="empty-ic">📋</div><p>No jobs yet. Post your first role above.</p></div>
+            ? <div className="empty-jobs"><div className="empty-ic">📋</div><p>No jobs yet. Click "Post Job" to add your first role.</p></div>
             : jobs.map(job=>(
               <div key={job.id} className="jrow">
                 <div className="jrb">
@@ -555,7 +634,7 @@ function AdminPanel({ onExit }) {
                     <td>{r.notice_period||"—"}</td>
                     <td>{r.current_salary?r.current_salary+"L":"—"}</td>
                     <td>{r.expected_salary?r.expected_salary+"L":"—"}</td>
-                    <td>{r.cv_filename?<span style={{color:"#7aa2ff",fontSize:12,fontWeight:600}}>📎</span>:<span style={{color:"var(--muted)"}}>—</span>}</td>
+                    <td>{r.cv_filename?<span style={{color:"#7aa2ff",fontSize:12}}>📎</span>:<span style={{color:"var(--muted)"}}>—</span>}</td>
                     <td style={{whiteSpace:"nowrap",color:"var(--muted)"}}>{new Date(r.created_at).toLocaleDateString("en-IN",{day:"2-digit",month:"short"})}</td>
                   </tr>
                 ))}</tbody>
@@ -568,57 +647,34 @@ function AdminPanel({ onExit }) {
   );
 }
 
-// ── ROOT APP ──────────────────────────────────────────────
-export default function App() {
-  const [page, setPage] = useState("portal");
+// ── CANDIDATE PORTAL ──────────────────────────────────────
+function Portal() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeJob, setActiveJob] = useState(null);
 
   useEffect(() => {
-    if (page !== "portal") return;
     (async () => {
-      setLoading(true);
       const s = await sb();
       const { data } = await s.from("shine_jobs").select("*").eq("active", true).order("created_at", { ascending: false });
       setJobs(data || []);
       setLoading(false);
     })();
-  }, [page]);
-
-  if (page === "admin") return (
-    <>
-      <style>{CSS}</style>
-      <header className="hdr">
-        <div className="hdr-left">
-          <ShineLogo height={28} />
-          <div className="hdr-div" />
-          <div className="hdr-tag">Admin Panel</div>
-        </div>
-      </header>
-      <AdminPanel onExit={() => setPage("portal")} />
-      <footer className="footer"><div className="ft">© 2025 Shine.com</div></footer>
-    </>
-  );
+  }, []);
 
   return (
     <>
-      <style>{CSS}</style>
-
       <header className="hdr">
         <div className="hdr-left">
           <ShineLogo height={28} />
           <div className="hdr-div" />
           <div className="hdr-tag">Exclusive <span>Premium Roles</span></div>
         </div>
-        <div className="hdr-right">
-          <div className="hdr-count">{jobs.length} OPENINGS</div>
-          <button className="hdr-adm" onClick={() => setPage("admin")}>Admin →</button>
-        </div>
+        <div className="hdr-count">{jobs.length} OPENINGS</div>
       </header>
 
       <section className="hero">
-        <div className="hero-pill"><span className="blink" />Actively Hiring · June 2025</div>
+        <div className="hero-pill"><span className="blink" />Actively Hiring · 2026</div>
         <h1>Find Your Next<br /><span className="hi">Dream Role</span></h1>
         <p className="hero-sub">Handpicked opportunities from top companies — vetted, high-growth, and ready to interview you.</p>
         <div className="hero-stats">
@@ -634,40 +690,64 @@ export default function App() {
           <div className="jh-t">Current Openings</div>
           <div className="jh-b">● Updated Today</div>
         </div>
-
         {loading ? <div className="loading">Loading jobs…</div> :
-          jobs.length === 0 ? (
-            <div className="empty-jobs"><div className="empty-ic">📭</div><p>No openings right now. Check back soon.</p></div>
-          ) : jobs.map(job => (
-            <div key={job.id} className="jcard">
-              <div className="jcard-top">
-                <div className="jcard-body">
-                  <div className="jco">{job.company}</div>
-                  <div className="jti">{job.title}</div>
-                  <div className="jmeta">
-                    <span className="mi"><Ic n="loc" />{job.location}</span>
-                    <span className="mi"><Ic n="bag" />{job.experience}</span>
-                    <span className="mi"><Ic n="globe" />{job.type}</span>
+          jobs.length===0
+            ? <div className="empty-jobs"><div className="empty-ic">📭</div><p>No openings right now. Check back soon.</p></div>
+            : jobs.map(job=>(
+              <div key={job.id} className="jcard">
+                <div className="jcard-top">
+                  <div className="jcard-body">
+                    <div className="jco">{job.company}</div>
+                    <div className="jti">{job.title}</div>
+                    <div className="jmeta">
+                      <span className="mi"><Ic n="loc" />{job.location}</span>
+                      <span className="mi"><Ic n="bag" />{job.experience}</span>
+                      <span className="mi"><Ic n="globe" />{job.type}</span>
+                    </div>
+                    <div className="jtags">{(job.tags||[]).map(t=><span key={t} className="jtag">{t}</span>)}</div>
+                    <div className="jsumm">{job.summary}</div>
                   </div>
-                  <div className="jtags">{(job.tags||[]).map(t=><span key={t} className="jtag">{t}</span>)}</div>
-                  <div className="jsumm">{job.summary}</div>
-                </div>
-                <div className="jcard-right">
-                  <div className="sal">{job.salary}</div>
-                  <button className="abtn" onClick={() => setActiveJob(job)}>Apply Now →</button>
+                  <div className="jcard-right">
+                    <div className="sal">{job.salary}</div>
+                    <button className="abtn" onClick={()=>setActiveJob(job)}>Apply Now →</button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))
+            ))
         }
       </div>
 
       <footer className="footer">
         <ShineLogo height={20} />
-        <div className="ft">© 2025 Shine.com · All Rights Reserved · Premium Talent Platform</div>
+        <div className="ft">© 2026 Shine.com · All Rights Reserved · Premium Talent Platform</div>
       </footer>
 
-      {activeJob && <ApplyModal job={activeJob} onClose={() => setActiveJob(null)} />}
+      {activeJob && <ApplyModal job={activeJob} onClose={()=>setActiveJob(null)} />}
+    </>
+  );
+}
+
+// ── ROOT: URL-based routing ───────────────────────────────
+export default function App() {
+  const route = getRoute();
+  return (
+    <>
+      <style>{CSS}</style>
+      {route === "admin" ? (
+        <>
+          <header className="hdr">
+            <div className="hdr-left">
+              <ShineLogo height={28} />
+              <div className="hdr-div" />
+              <div className="hdr-tag">Admin Panel</div>
+            </div>
+          </header>
+          <AdminPanel />
+          <footer className="footer"><div className="ft">© 2026 Shine.com · Admin</div></footer>
+        </>
+      ) : (
+        <Portal />
+      )}
     </>
   );
 }
