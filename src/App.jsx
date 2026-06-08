@@ -1177,14 +1177,14 @@ function Portal() {
           <div className="hdr-tagline">Exclusive <strong>Premium Roles</strong></div>
         </div>
         <div className="hdr-right">
-          <div className="hdr-pill">{jobs.length} OPENINGS</div>
+          <div className="hdr-pill">PREMIUM ROLES</div>
         </div>
       </header>
 
       <section className="hero">
-        <div className="hero-eyebrow"><span className="hero-dot"/>Actively Hiring · 2026</div>
-        <h1>Find Your Next<br /><em>Dream Role</em></h1>
-        <p className="hero-sub">Handpicked opportunities from India's top companies — vetted, high-growth, and ready to move fast.</p>
+        <div className="hero-eyebrow"><span className="hero-dot"/>Senior &amp; Lead Roles · Invite Only</div>
+        <h1>Where Top Engineers<br /><em>Get Headhunted</em></h1>
+        <p className="hero-sub">Curated high-impact roles in software engineering — mid to senior level. No applications lost in a void. Hiring managers call you directly.</p>
         <div className="hero-stats">
           <div className="hstat"><div className="hstat-n">{jobs.length}</div><div className="hstat-l">Open Roles</div></div>
           
@@ -1198,7 +1198,7 @@ function Portal() {
       <div className="section">
         <div className="section-header">
           <div className="section-title">Current Openings</div>
-          <div className="section-badge"><span className="section-badge-dot"/>Updated Today</div>
+          <div className="section-badge"><span className="section-badge-dot"/>Hiring Managers Will Call You</div>
         </div>
 
         {loading ? <div className="loading">Loading jobs…</div> :
