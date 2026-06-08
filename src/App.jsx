@@ -200,6 +200,46 @@ body{
 }
 .section-badge-dot{width:5px;height:5px;border-radius:50%;background:#12B76A}
 
+
+/* ── COMPANY MARQUEE ── */
+.marquee-wrap{
+  background:rgba(255,255,255,.04);
+  border-top:1px solid rgba(255,255,255,.07);
+  border-bottom:1px solid rgba(255,255,255,.07);
+  padding:18px 0;
+  overflow:hidden;
+  position:relative;
+}
+.marquee-wrap::before,.marquee-wrap::after{
+  content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2;
+}
+.marquee-wrap::before{left:0;background:linear-gradient(90deg,#0a0d14,transparent)}
+.marquee-wrap::after{right:0;background:linear-gradient(270deg,#0a0d14,transparent)}
+.marquee-track{
+  display:flex;align-items:center;gap:48px;
+  width:max-content;
+  animation:marquee 28s linear infinite;
+}
+.marquee-track:hover{animation-play-state:paused}
+@keyframes marquee{
+  0%{transform:translateX(0)}
+  100%{transform:translateX(-50%)}
+}
+.co-badge{
+  display:flex;align-items:center;gap:9px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:var(--r-full);
+  padding:7px 16px 7px 10px;
+  white-space:nowrap;flex-shrink:0;
+}
+.co-badge-logo{
+  width:26px;height:26px;border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:800;color:#fff;flex-shrink:0;
+}
+.co-badge-name{font-size:12px;font-weight:700;color:rgba(255,255,255,.75);letter-spacing:.2px}
+
 /* ── JOB CARD ── */
 .jcard{
   background:var(--surface-base);
@@ -1071,6 +1111,41 @@ function AdminPanel() {
   );
 }
 
+
+// ── COMPANY MARQUEE ──────────────────────────────────────
+const MARQUEE_COS = [
+  { name:"HCL Technologies", color:"#1A56FF" },
+  { name:"Amazon",           color:"#FF9900" },
+  { name:"Genpact",          color:"#E31B8F" },
+  { name:"Cvent",            color:"#00A1E0" },
+  { name:"Infosys",          color:"#007CC2" },
+  { name:"Wipro",            color:"#341C6B" },
+  { name:"TCS",              color:"#1A3A6B" },
+  { name:"Accenture",        color:"#A100FF" },
+  { name:"Capgemini",        color:"#0070AD" },
+  { name:"Cognizant",        color:"#1263A0" },
+  { name:"IBM",              color:"#006699" },
+  { name:"Microsoft",        color:"#00A4EF" },
+];
+
+function CompanyMarquee() {
+  const doubled = [...MARQUEE_COS, ...MARQUEE_COS];
+  return (
+    <div className="marquee-wrap">
+      <div className="marquee-track">
+        {doubled.map((co, i) => (
+          <div key={i} className="co-badge">
+            <div className="co-badge-logo" style={{background:co.color}}>
+              {co.name.charAt(0)}
+            </div>
+            <span className="co-badge-name">{co.name}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ── PORTAL ────────────────────────────────────────────────
 function Portal() {
   const [jobs, setJobs] = useState([]);
@@ -1116,6 +1191,8 @@ function Portal() {
           <div className="hstat"><div className="hstat-n">Direct Calls</div><div className="hstat-l">From HR Managers</div></div>
         </div>
       </section>
+
+      <CompanyMarquee />
 
       <div className="section">
         <div className="section-header">
