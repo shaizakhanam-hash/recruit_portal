@@ -12,10 +12,25 @@ async function sb() {
   return _sb;
 }
 
+// Generate URL-friendly slug from title + company
+function toSlug(title, company) {
+  return [title, company]
+    .filter(Boolean)
+    .join("-")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 function getRoute() {
   const path = window.location.pathname;
   if (path === "/admin" || path === "/admin/") return "admin";
+  if (path.startsWith("/jobs/")) return "job";
   return "portal";
+}
+
+function getJobSlug() {
+  return window.location.pathname.replace("/jobs/", "").replace(/\/$/, "");
 }
 
 // ── SHINE LOGO ─────────────────────────────────────────────
@@ -1072,6 +1087,11 @@ function Portal() {
     })();
   }, []);
 
+  const openJobBySlug = (jobList, slug) => {
+    const match = jobList.find(j => toSlug(j.title, j.company) === slug);
+    if (match) setOpenJD(match);
+  };
+
   return (
     <>
       <header className="hdr">
@@ -1107,7 +1127,7 @@ function Portal() {
           jobs.length===0
             ? <div className="empty-state"><div className="empty-ic">📭</div><p>No openings right now. Check back soon.</p></div>
             : jobs.map((job, idx) => (
-              <div key={job.id} className="jcard" onClick={()=>setOpenJD(job)}>
+              <div key={job.id} className="jcard" onClick={()=>{ setOpenJD(job); window.history.pushState({}, '', '/jobs/'+toSlug(job.title, job.company)); }}>
                 <div className="co-logo" style={{background:logoColor(job.company)}}>{logoInitials(job.company)}</div>
                 <div className="jcard-body">
                   <div className="jcard-co">{job.company}</div>
@@ -1131,7 +1151,7 @@ function Portal() {
                     <span className="badge-hiring">Actively Hiring</span>
                     {idx < 2 && <span className="badge-early">Be An Early Applicant</span>}
                   </div>
-                  <button className="jcard-apply" onClick={e=>{e.stopPropagation();setOpenJD(job)}}>
+                  <button className="jcard-apply" onClick={e=>{ e.stopPropagation(); setOpenJD(job); window.history.pushState({}, '', '/jobs/'+toSlug(job.title, job.company)); }}>
                     Apply <Ic n="arrow" s={13}/>
                   </button>
                 </div>
@@ -1146,11 +1166,137 @@ function Portal() {
       </footer>
 
       {openJD && !applyJob && (
-        <JDModal job={openJD} onApply={()=>{setApplyJob(openJD);setOpenJD(null);}} onClose={()=>setOpenJD(null)} />
+        <JDModal job={openJD} onApply={()=>{setApplyJob(openJD);setOpenJD(null);}} onClose={()=>{ setOpenJD(null); window.history.pushState({}, '', '/'); }} />
       )}
       {applyJob && (
         <ApplyModal job={applyJob} onClose={()=>setApplyJob(null)} />
       )}
+    </>
+  );
+}
+
+
+// ── JOB PAGE — direct URL e.g. /jobs/senior-engineer-hcl ─
+function JobPage() {
+  const slug = getJobSlug();
+  const [job, setJob] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [applyJob, setApplyJob] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      const s = await sb();
+      const { data } = await s.from("shine_jobs").select("*").eq("active", true);
+      const match = (data||[]).find(j => toSlug(j.title, j.company) === slug);
+      setJob(match || null);
+      setLoading(false);
+    })();
+  }, [slug]);
+
+  if (loading) return (
+    <>
+      <header className="hdr">
+        <div className="hdr-left">
+          <ShineLogo height={26} light />
+          <div className="hdr-divider"/>
+          <div className="hdr-tagline">Exclusive <strong>Premium Roles</strong></div>
+        </div>
+      </header>
+      <div className="loading" style={{paddingTop:80}}>Loading…</div>
+    </>
+  );
+
+  if (!job) return (
+    <>
+      <header className="hdr">
+        <div className="hdr-left">
+          <ShineLogo height={26} light />
+          <div className="hdr-divider"/>
+          <div className="hdr-tagline">Exclusive <strong>Premium Roles</strong></div>
+        </div>
+      </header>
+      <div className="empty-state" style={{paddingTop:80}}>
+        <div className="empty-ic">🔍</div>
+        <p style={{marginBottom:16}}>This job is no longer available.</p>
+        <a href="/" style={{color:"var(--brand-500)",fontWeight:600,fontSize:14}}>← View all openings</a>
+      </div>
+    </>
+  );
+
+  return (
+    <>
+      <header className="hdr">
+        <div className="hdr-left">
+          <ShineLogo height={26} light />
+          <div className="hdr-divider"/>
+          <div className="hdr-tagline">Exclusive <strong>Premium Roles</strong></div>
+        </div>
+        <div className="hdr-right">
+          <a href="/" style={{color:"var(--content-muted)",fontSize:13,fontWeight:600,textDecoration:"none"}}>← All Jobs</a>
+        </div>
+      </header>
+
+      {/* Full JD laid out as a page, not modal */}
+      <div style={{maxWidth:720,margin:"0 auto",padding:"40px 24px 80px"}}>
+        {/* Header card */}
+        <div style={{background:"var(--surface-base)",border:"1px solid var(--stroke-default)",borderRadius:"var(--r-2xl)",padding:"32px",marginBottom:16,boxShadow:"var(--el-raised)"}}>
+          <div style={{display:"flex",alignItems:"center",gap:16,marginBottom:20}}>
+            <div className="co-logo" style={{background:logoColor(job.company),width:56,height:56,fontSize:18,borderRadius:12}}>
+              {logoInitials(job.company)}
+            </div>
+            <div>
+              <div style={{fontSize:12,fontWeight:600,color:"var(--content-muted)",marginBottom:4,letterSpacing:".2px"}}>{job.company}</div>
+              <div style={{fontSize:24,fontWeight:800,color:"var(--content-base)",letterSpacing:"-.5px",lineHeight:1.2}}>{job.title}</div>
+            </div>
+          </div>
+          <div className="jd-meta-row">
+            {job.location && <span className="jd-meta-chip"><Ic n="loc" s={11}/>{job.location}</span>}
+            {job.experience && <span className="jd-meta-chip"><Ic n="bag" s={11}/>{job.experience}</span>}
+            {job.type && <span className="jd-meta-chip"><Ic n="globe" s={11}/>{job.type}</span>}
+            {job.salary && <span className="jd-meta-chip jd-sal-chip">{job.salary}</span>}
+          </div>
+          {(job.tags||[]).length > 0 && (
+            <div className="jd-tags" style={{marginTop:12}}>
+              {job.tags.map(t=><span key={t} className="jd-tag">{t}</span>)}
+            </div>
+          )}
+        </div>
+
+        {/* JD sections */}
+        {[["About This Role",job.about],["Responsibilities",job.responsibilities],["Requirements",job.requirements],["Perks & Benefits",job.perks]].filter(([,v])=>v).map(([title,text])=>(
+          <div key={title} style={{background:"var(--surface-base)",border:"1px solid var(--stroke-default)",borderRadius:"var(--r-xl)",padding:"24px 28px",marginBottom:12,boxShadow:"var(--el-raised)"}}>
+            <div style={{fontSize:11,fontWeight:700,color:"var(--content-muted)",textTransform:"uppercase",letterSpacing:"1.5px",marginBottom:10}}>{title}</div>
+            <div style={{fontSize:14,fontWeight:400,color:"var(--content-subtle)",lineHeight:1.8,whiteSpace:"pre-wrap"}}>{text}</div>
+          </div>
+        ))}
+
+        {/* Sticky apply bar */}
+        <div style={{
+          position:"sticky",bottom:20,
+          background:"var(--surface-base)",
+          border:"1px solid var(--stroke-default)",
+          borderRadius:"var(--r-xl)",
+          padding:"16px 22px",
+          display:"flex",alignItems:"center",justifyContent:"space-between",
+          boxShadow:"var(--el-overlay)",
+          marginTop:16,flexWrap:"wrap",gap:12,
+        }}>
+          <div>
+            <div style={{fontSize:15,fontWeight:700,color:"var(--content-base)"}}>{job.title}</div>
+            <div style={{fontSize:13,fontWeight:500,color:"var(--content-muted)"}}>{job.company} · {job.location}</div>
+          </div>
+          <button className="jd-apply-btn" onClick={()=>setApplyJob(job)}>
+            Apply for this Role <Ic n="arrow" s={14}/>
+          </button>
+        </div>
+      </div>
+
+      <footer className="footer">
+        <ShineLogo height={24} />
+        <div className="footer-right">© 2026 Shine.com · All Rights Reserved</div>
+      </footer>
+
+      {applyJob && <ApplyModal job={applyJob} onClose={()=>setApplyJob(null)} />}
     </>
   );
 }
@@ -1175,7 +1321,7 @@ export default function App() {
             <div className="footer-right">© 2026 Shine.com · Admin</div>
           </footer>
         </>
-      ) : <Portal /> }
+      ) : route === "job" ? <JobPage /> : <Portal /> }
     </>
   );
 }
