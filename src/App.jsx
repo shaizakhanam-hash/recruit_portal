@@ -139,6 +139,7 @@ body{
   padding:72px 24px 60px;
   text-align:center;
   position:relative;overflow:hidden;
+  display:flex;flex-direction:column;align-items:center;
 }
 .hero::before{
   content:'';position:absolute;inset:0;
@@ -174,13 +175,13 @@ body{
   max-width:480px;margin:0 auto 44px;line-height:1.7;
 }
 .hero-stats{
-  display:flex;
+  display:inline-flex;
   background:rgba(255,255,255,.05);
   border:1px solid rgba(255,255,255,.08);
   border-radius:var(--r-xl);
   overflow:hidden;
   max-width:640px;
-  width:100%;
+  width:auto;
 }
 .hstat{
   flex:1;padding:20px 24px;text-align:center;
