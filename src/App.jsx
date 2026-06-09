@@ -351,6 +351,10 @@ body{
 .skill-chip::after{content:'·';margin:0 6px;color:var(--neutral-300);font-weight:400}
 .skill-chip:last-child::after{display:none}
 
+@media(max-width:900px){
+  .jp-two-col{grid-template-columns:1fr !important}
+  .jp-form-sticky{position:static !important;top:auto !important}
+}
 @media(max-width:640px){
   /* Header */
   .hdr{padding:0 16px;height:56px}
@@ -1431,27 +1435,27 @@ function JobPage() {
       <Nav />
 
       {/* Trust bar */}
-      <div style={{background:"var(--neutral-black)",borderBottom:"1px solid rgba(255,255,255,.08)",padding:"10px 24px",display:"flex",alignItems:"center",justifyContent:"center",gap:32,flexWrap:"wrap"}}>
+      <div style={{background:"var(--neutral-black)",borderBottom:"1px solid rgba(255,255,255,.08)",padding:"10px 16px",display:"flex",alignItems:"center",justifyContent:"flex-start",gap:20,overflowX:"auto",WebkitOverflowScrolling:"touch",scrollbarWidth:"none"}}>
         {[["📞","Hiring manager calls you directly"],["🏢","Senior & lead roles only"],["⚡","Response within 48 hours"],["🔒","No middlemen · Direct process"]].map(([ic,txt])=>(
-          <div key={txt} style={{display:"flex",alignItems:"center",gap:7,fontSize:12,fontWeight:500,color:"rgba(255,255,255,.6)"}}>
+          <div key={txt} style={{display:"flex",alignItems:"center",gap:7,fontSize:12,fontWeight:500,color:"rgba(255,255,255,.6)",flexShrink:0,whiteSpace:"nowrap"}}>
             <span style={{fontSize:14}}>{ic}</span>{txt}
           </div>
         ))}
       </div>
 
-      <div style={{maxWidth:1100,margin:"0 auto",padding:"36px 24px 80px",display:"grid",gridTemplateColumns:"1fr 380px",gap:28,alignItems:"start"}}>
+      <div className="jp-two-col" style={{maxWidth:1100,margin:"0 auto",padding:"32px 20px 80px",display:"grid",gridTemplateColumns:"1fr 380px",gap:24,alignItems:"start"}}>
 
         {/* LEFT — JD */}
         <div>
           {/* Job header card */}
-          <div style={{background:"var(--surface-base)",border:"1px solid var(--stroke-default)",borderRadius:"var(--r-2xl)",padding:"28px 32px",marginBottom:14,boxShadow:"var(--el-raised)"}}>
+          <div style={{background:"var(--surface-base)",border:"1px solid var(--stroke-default)",borderRadius:"var(--r-2xl)",padding:"20px",marginBottom:12,boxShadow:"var(--el-raised)"}}>
             <div style={{display:"flex",alignItems:"center",gap:14,marginBottom:18}}>
               <div className="co-logo" style={{background:logoColor(job.company),width:54,height:54,fontSize:18,borderRadius:12,flexShrink:0}}>
                 {logoInitials(job.company)}
               </div>
               <div>
                 <div style={{fontSize:12,fontWeight:600,color:"var(--content-muted)",marginBottom:4}}>{job.company}</div>
-                <div style={{fontSize:24,fontWeight:800,color:"var(--content-base)",letterSpacing:"-.5px",lineHeight:1.2}}>{job.title}</div>
+                <div style={{fontSize:"clamp(18px,4vw,24px)",fontWeight:800,color:"var(--content-base)",letterSpacing:"-.5px",lineHeight:1.2}}>{job.title}</div>
               </div>
             </div>
             <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:job.tags?.length?14:0}}>
@@ -1467,7 +1471,7 @@ function JobPage() {
 
           {/* JD sections */}
           {[["About This Role",job.about],["Responsibilities",job.responsibilities],["Requirements",job.requirements],["Perks & Benefits",job.perks]].filter(([,v])=>v).map(([title,text])=>(
-            <div key={title} style={{background:"var(--surface-base)",border:"1px solid var(--stroke-default)",borderRadius:"var(--r-xl)",padding:"22px 28px",marginBottom:10,boxShadow:"var(--el-raised)"}}>
+            <div key={title} style={{background:"var(--surface-base)",border:"1px solid var(--stroke-default)",borderRadius:"var(--r-xl)",padding:"18px 20px",marginBottom:10,boxShadow:"var(--el-raised)"}}>
               <div style={{fontSize:11,fontWeight:700,color:"var(--content-muted)",textTransform:"uppercase",letterSpacing:"1.5px",marginBottom:10}}>{title}</div>
               <div style={{fontSize:14,fontWeight:400,color:"var(--content-subtle)",lineHeight:1.8,whiteSpace:"pre-wrap"}}>{text}</div>
             </div>
@@ -1475,7 +1479,7 @@ function JobPage() {
         </div>
 
         {/* RIGHT — Sticky registration form */}
-        <div style={{position:"sticky",top:80}}>
+        <div className="jp-form-sticky" style={{position:"sticky",top:80}}>
           {done ? (
             <div style={{background:"var(--surface-base)",border:"1px solid var(--stroke-default)",borderRadius:"var(--r-2xl)",padding:"32px",boxShadow:"var(--el-raised)",textAlign:"center"}}>
               <span style={{fontSize:56,display:"block",marginBottom:14,animation:"pop .4s ease"}}>🎉</span>
@@ -1567,15 +1571,7 @@ function JobPage() {
         </div>
       </div>
 
-      {/* Mobile apply CTA — only visible on small screens */}
-      <style>{`
-        @media(max-width:768px){
-          .jp-grid{grid-template-columns:1fr !important}
-          .jp-form-col{position:static !important}
-          .jp-trust-bar{gap:14px !important;padding:8px 16px !important}
-          .jp-trust-bar > div{font-size:11px !important}
-        }
-      `}</style>
+
 
       <footer className="footer">
         <ShineLogo height={24} />
