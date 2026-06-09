@@ -813,6 +813,15 @@ function ApplyModal({ job, onClose }) {
     setBusy(true);
     try {
       const s = await sb();
+      let cv_url = null;
+      let cv_filename = null;
+      if (cv) {
+        const path = Date.now() + "-" + cv.name.replace(/\s+/g, "_");
+        const { error: upErr } = await s.storage.from("cvs").upload(path, cv, { cacheControl:"3600", upsert:false });
+        if (upErr) throw upErr;
+        cv_url = s.storage.from("cvs").getPublicUrl(path).data.publicUrl;
+        cv_filename = cv.name;
+      }
       const id = "SHN-" + Math.random().toString(36).slice(2,8).toUpperCase();
       const { error } = await s.from("applications").insert([{
         id, job_id: String(job.id), job_title: job.title,
@@ -820,7 +829,7 @@ function ApplyModal({ job, onClose }) {
         name: f.name, phone: f.phone, email: f.email||null,
         years_exp: f.years_exp||null, notice_period: f.notice_period||null,
         current_salary: f.current_salary||null, expected_salary: f.expected_salary||null,
-        cv_filename: cv ? cv.name : null,
+        cv_filename, cv_url,
       }]);
       if (error) throw error;
       setDone({ ...f, id, job_title: job.title });
@@ -1171,7 +1180,7 @@ function AdminPanel() {
                     <td>{r.notice_period||"—"}</td>
                     <td>{r.current_salary?r.current_salary+"L":"—"}</td>
                     <td>{r.expected_salary?r.expected_salary+"L":"—"}</td>
-                    <td>{r.cv_filename?<span style={{color:"var(--brand-500)",fontSize:12,fontWeight:700}}>📎</span>:<span style={{color:"var(--content-disabled)"}}>—</span>}</td>
+                    <td>{r.cv_url?<a href={r.cv_url} target="_blank" rel="noreferrer" style={{color:"var(--brand-500)",fontSize:12,fontWeight:700,textDecoration:"none",display:"flex",alignItems:"center",gap:4}}>📎 View</a>:<span style={{color:"var(--content-disabled)"}}>—</span>}</td>
                     <td style={{whiteSpace:"nowrap",color:"var(--content-muted)"}}>{new Date(r.created_at).toLocaleDateString("en-IN",{day:"2-digit",month:"short"})}</td>
                   </tr>
                 ))}</tbody>
@@ -1391,6 +1400,15 @@ function JobPage() {
     setBusy(true);
     try {
       const s = await sb();
+      let cv_url = null;
+      let cv_filename = null;
+      if (cv) {
+        const path = Date.now() + "-" + cv.name.replace(/\s+/g, "_");
+        const { error: upErr } = await s.storage.from("cvs").upload(path, cv, { cacheControl:"3600", upsert:false });
+        if (upErr) throw upErr;
+        cv_url = s.storage.from("cvs").getPublicUrl(path).data.publicUrl;
+        cv_filename = cv.name;
+      }
       const id = "SHN-" + Math.random().toString(36).slice(2,8).toUpperCase();
       const { error } = await s.from("applications").insert([{
         id, job_id: String(job.id), job_title: job.title,
@@ -1398,7 +1416,7 @@ function JobPage() {
         name: f.name, phone: f.phone, email: f.email||null,
         years_exp: f.years_exp||null, notice_period: f.notice_period||null,
         current_salary: f.current_salary||null, expected_salary: f.expected_salary||null,
-        cv_filename: cv ? cv.name : null,
+        cv_filename, cv_url,
       }]);
       if (error) throw error;
       setDone(id);
