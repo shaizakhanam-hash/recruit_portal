@@ -354,6 +354,8 @@ body{
 @media(max-width:900px){
   .jp-two-col{grid-template-columns:1fr !important}
   .jp-form-sticky{position:static !important;top:auto !important}
+  .jp-mobile-apply{display:flex !important}
+  .jp-footer-pad{padding-bottom:80px !important}
 }
 @media(max-width:640px){
   /* Header */
@@ -1479,7 +1481,7 @@ function JobPage() {
         </div>
 
         {/* RIGHT — Sticky registration form */}
-        <div className="jp-form-sticky" style={{position:"sticky",top:80}}>
+        <div id="jp-form-top" className="jp-form-sticky" style={{position:"sticky",top:80}}>
           {done ? (
             <div style={{background:"var(--surface-base)",border:"1px solid var(--stroke-default)",borderRadius:"var(--r-2xl)",padding:"32px",boxShadow:"var(--el-raised)",textAlign:"center"}}>
               <span style={{fontSize:56,display:"block",marginBottom:14,animation:"pop .4s ease"}}>🎉</span>
@@ -1573,7 +1575,18 @@ function JobPage() {
 
 
 
-      <footer className="footer">
+      {/* Sticky apply bar — mobile only */}
+      <div className="jp-mobile-apply" style={{display:"none",position:"fixed",bottom:0,left:0,right:0,background:"var(--surface-base)",borderTop:"1px solid var(--stroke-default)",padding:"12px 16px 16px",zIndex:150,boxShadow:"0 -4px 20px rgba(13,17,23,.1)",alignItems:"center",justifyContent:"space-between",gap:12}}>
+        <div style={{minWidth:0}}>
+          <div style={{fontSize:13,fontWeight:700,color:"var(--content-base)",lineHeight:1.2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{job.title}</div>
+          <div style={{fontSize:11,fontWeight:500,color:"var(--content-muted)",marginTop:2}}>{job.company} {job.salary ? "· "+job.salary : ""}</div>
+        </div>
+        <button className="sbtn" style={{margin:0,width:"auto",padding:"11px 22px",fontSize:14,flexShrink:0}} onClick={()=>document.getElementById("jp-form-top").scrollIntoView({behavior:"smooth"})}>
+          Apply Now →
+        </button>
+      </div>
+
+      <footer className="footer jp-footer-pad">
         <ShineLogo height={24} />
         <div className="footer-right">© 2026 Shine.com · All Rights Reserved</div>
       </footer>
