@@ -396,6 +396,8 @@ body{
   /* Job page */
   .job-page-wrap{padding:20px 14px 60px}
   .job-sticky-bar{border-radius:var(--r-lg);margin:0 14px 14px;bottom:14px}
+  .ctx-bar-divider{display:none !important}
+  .ctx-bar-divider{display:none !important}
 }
 @media(max-width:400px){
   .hero h1{font-size:26px}
@@ -862,7 +864,7 @@ function ApplyModal({ job, onClose }) {
           </div>
           <div className="fg">
             <label className="lb">Mobile Number</label>
-            <input className={`inp${errs.phone?" er":""}`} placeholder="10-digit mobile" value={f.phone} maxLength={10} inputMode="numeric" onChange={e=>{set("phone",e.target.value.replace(/\D/g,"").slice(0,10));clr("phone")}} />
+            <input className={`inp${errs.phone?" er":""}`} placeholder="10-digit mobile" value={f.phone} maxLength={10} inputMode="numeric" onChange={e=>{set("phone",e.target.value.replace(/[^0-9]/g,"").slice(0,10));clr("phone")}} />
             {errs.phone&&<div className="et">{errs.phone}</div>}
           </div>
         </div>
@@ -1341,7 +1343,15 @@ function JobPage() {
   const slug = getJobSlug();
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [applyJob, setApplyJob] = useState(null);
+  const [f, setF] = useState({ name:"", phone:"", email:"", years_exp:"", notice_period:"", current_salary:"", expected_salary:"" });
+  const [cv, setCv] = useState(null);
+  const [drag, setDrag] = useState(false);
+  const [errs, setErrs] = useState({});
+  const [busy, setBusy] = useState(false);
+  const [done, setDone] = useState(null);
+
+  const set = (k,v) => setF(p=>({...p,[k]:v}));
+  const clr = k => setErrs(p=>({...p,[k]:""}));
 
   useEffect(() => {
     (async () => {
@@ -1353,110 +1363,224 @@ function JobPage() {
     })();
   }, [slug]);
 
-  if (loading) return (
-    <>
-      <header className="hdr">
-        <div className="hdr-left">
-          <ShineLogo height={26} light />
-          <div className="hdr-divider"/>
-          <div className="hdr-tagline">Powered by <strong>Shine.com</strong></div>
-        </div>
-      </header>
-      <div className="loading" style={{paddingTop:80}}>Loading…</div>
-    </>
+  const validate = () => {
+    const e = {};
+    if (!f.name.trim()) e.name = "Full name is required";
+    if (!f.phone.trim()) e.phone = "Phone is required";
+    else if (!/^[6-9]\d{9}$/.test(f.phone.replace(/\s+/g,""))) e.phone = "Enter valid 10-digit Indian mobile";
+    if (f.email && !/\S+@\S+\.\S+/.test(f.email)) e.email = "Enter a valid email";
+    return e;
+  };
+
+  const handleFile = file => {
+    if (!file) return;
+    if (!["application/pdf","application/msword","application/vnd.openxmlformats-officedocument.wordprocessingml.document"].includes(file.type)) return alert("PDF or Word only.");
+    if (file.size > 5*1024*1024) return alert("Max 5 MB.");
+    setCv(file);
+  };
+
+  const submit = async () => {
+    const e = validate();
+    if (Object.keys(e).length) { setErrs(e); return; }
+    setBusy(true);
+    try {
+      const s = await sb();
+      const id = "SHN-" + Math.random().toString(36).slice(2,8).toUpperCase();
+      const { error } = await s.from("applications").insert([{
+        id, job_id: String(job.id), job_title: job.title,
+        job_location: job.location, company_id: "shine",
+        name: f.name, phone: f.phone, email: f.email||null,
+        years_exp: f.years_exp||null, notice_period: f.notice_period||null,
+        current_salary: f.current_salary||null, expected_salary: f.expected_salary||null,
+        cv_filename: cv ? cv.name : null,
+      }]);
+      if (error) throw error;
+      setDone(id);
+    } catch(err) { alert("Failed to submit. Please try again."); console.error(err); }
+    finally { setBusy(false); }
+  };
+
+  const Nav = () => (
+    <header className="hdr">
+      <div className="hdr-left">
+        <ShineLogo height={26} light />
+        <div className="hdr-divider"/>
+        <div className="hdr-tagline">Powered by <strong>Shine.com</strong></div>
+      </div>
+      <div className="hdr-right">
+        <a href="/" style={{color:"var(--content-muted)",fontSize:13,fontWeight:600,textDecoration:"none",display:"flex",alignItems:"center",gap:5}}>
+          ← All Jobs
+        </a>
+      </div>
+    </header>
   );
 
+  if (loading) return (<><style>{CSS}</style><Nav /><div className="loading" style={{paddingTop:80}}>Loading…</div></>);
   if (!job) return (
-    <>
-      <header className="hdr">
-        <div className="hdr-left">
-          <ShineLogo height={26} light />
-          <div className="hdr-divider"/>
-          <div className="hdr-tagline">Powered by <strong>Shine.com</strong></div>
-        </div>
-      </header>
-      <div className="empty-state" style={{paddingTop:80}}>
-        <div className="empty-ic">🔍</div>
-        <p style={{marginBottom:16}}>This job is no longer available.</p>
-        <a href="/" style={{color:"var(--brand-500)",fontWeight:600,fontSize:14}}>← View all openings</a>
-      </div>
-    </>
+    <><style>{CSS}</style><Nav />
+    <div className="empty-state" style={{paddingTop:80}}>
+      <div className="empty-ic">🔍</div>
+      <p style={{marginBottom:16}}>This job is no longer available.</p>
+      <a href="/" style={{color:"var(--brand-500)",fontWeight:600,fontSize:14}}>← View all openings</a>
+    </div></>
   );
 
   return (
     <>
-      <header className="hdr">
-        <div className="hdr-left">
-          <ShineLogo height={26} light />
-          <div className="hdr-divider"/>
-          <div className="hdr-tagline">Powered by <strong>Shine.com</strong></div>
-        </div>
-        <div className="hdr-right">
-          <a href="/" style={{color:"var(--content-muted)",fontSize:13,fontWeight:600,textDecoration:"none"}}>← All Jobs</a>
-        </div>
-      </header>
+      <style>{CSS}</style>
+      <Nav />
 
-      {/* Full JD laid out as a page, not modal */}
-      <div className="job-page-wrap" style={{maxWidth:720,margin:"0 auto",padding:"40px 24px 80px"}}>
-        {/* Header card */}
-        <div style={{background:"var(--surface-base)",border:"1px solid var(--stroke-default)",borderRadius:"var(--r-2xl)",padding:"32px",marginBottom:16,boxShadow:"var(--el-raised)"}}>
-          <div style={{display:"flex",alignItems:"center",gap:16,marginBottom:20}}>
-            <div className="co-logo" style={{background:logoColor(job.company),width:56,height:56,fontSize:18,borderRadius:12}}>
-              {logoInitials(job.company)}
-            </div>
-            <div>
-              <div style={{fontSize:12,fontWeight:600,color:"var(--content-muted)",marginBottom:4,letterSpacing:".2px"}}>{job.company}</div>
-              <div style={{fontSize:24,fontWeight:800,color:"var(--content-base)",letterSpacing:"-.5px",lineHeight:1.2}}>{job.title}</div>
-            </div>
+      {/* Trust bar */}
+      <div style={{background:"var(--neutral-black)",borderBottom:"1px solid rgba(255,255,255,.08)",padding:"10px 24px",display:"flex",alignItems:"center",justifyContent:"center",gap:32,flexWrap:"wrap"}}>
+        {[["📞","Hiring manager calls you directly"],["🏢","Senior & lead roles only"],["⚡","Response within 48 hours"],["🔒","No middlemen · Direct process"]].map(([ic,txt])=>(
+          <div key={txt} style={{display:"flex",alignItems:"center",gap:7,fontSize:12,fontWeight:500,color:"rgba(255,255,255,.6)"}}>
+            <span style={{fontSize:14}}>{ic}</span>{txt}
           </div>
-          <div className="jd-meta-row">
-            {job.location && <span className="jd-meta-chip"><Ic n="loc" s={11}/>{job.location}</span>}
-            {job.experience && <span className="jd-meta-chip"><Ic n="bag" s={11}/>{job.experience}</span>}
-            {job.type && <span className="jd-meta-chip"><Ic n="globe" s={11}/>{job.type}</span>}
-            {job.salary && <span className="jd-meta-chip jd-sal-chip">{job.salary}</span>}
+        ))}
+      </div>
+
+      <div style={{maxWidth:1100,margin:"0 auto",padding:"36px 24px 80px",display:"grid",gridTemplateColumns:"1fr 380px",gap:28,alignItems:"start"}}>
+
+        {/* LEFT — JD */}
+        <div>
+          {/* Job header card */}
+          <div style={{background:"var(--surface-base)",border:"1px solid var(--stroke-default)",borderRadius:"var(--r-2xl)",padding:"28px 32px",marginBottom:14,boxShadow:"var(--el-raised)"}}>
+            <div style={{display:"flex",alignItems:"center",gap:14,marginBottom:18}}>
+              <div className="co-logo" style={{background:logoColor(job.company),width:54,height:54,fontSize:18,borderRadius:12,flexShrink:0}}>
+                {logoInitials(job.company)}
+              </div>
+              <div>
+                <div style={{fontSize:12,fontWeight:600,color:"var(--content-muted)",marginBottom:4}}>{job.company}</div>
+                <div style={{fontSize:24,fontWeight:800,color:"var(--content-base)",letterSpacing:"-.5px",lineHeight:1.2}}>{job.title}</div>
+              </div>
+            </div>
+            <div style={{display:"flex",flexWrap:"wrap",gap:8,marginBottom:job.tags?.length?14:0}}>
+              {job.location && <span className="jd-meta-chip"><Ic n="loc" s={11}/>{job.location}</span>}
+              {job.experience && <span className="jd-meta-chip"><Ic n="bag" s={11}/>{job.experience}</span>}
+              {job.type && <span className="jd-meta-chip"><Ic n="globe" s={11}/>{job.type}</span>}
+              {job.salary && <span className="jd-meta-chip jd-sal-chip">{job.salary}</span>}
+            </div>
+            {(job.tags||[]).length > 0 && (
+              <div className="jd-tags">{job.tags.map(t=><span key={t} className="jd-tag">{t}</span>)}</div>
+            )}
           </div>
-          {(job.tags||[]).length > 0 && (
-            <div className="jd-tags" style={{marginTop:12}}>
-              {job.tags.map(t=><span key={t} className="jd-tag">{t}</span>)}
+
+          {/* JD sections */}
+          {[["About This Role",job.about],["Responsibilities",job.responsibilities],["Requirements",job.requirements],["Perks & Benefits",job.perks]].filter(([,v])=>v).map(([title,text])=>(
+            <div key={title} style={{background:"var(--surface-base)",border:"1px solid var(--stroke-default)",borderRadius:"var(--r-xl)",padding:"22px 28px",marginBottom:10,boxShadow:"var(--el-raised)"}}>
+              <div style={{fontSize:11,fontWeight:700,color:"var(--content-muted)",textTransform:"uppercase",letterSpacing:"1.5px",marginBottom:10}}>{title}</div>
+              <div style={{fontSize:14,fontWeight:400,color:"var(--content-subtle)",lineHeight:1.8,whiteSpace:"pre-wrap"}}>{text}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* RIGHT — Sticky registration form */}
+        <div style={{position:"sticky",top:80}}>
+          {done ? (
+            <div style={{background:"var(--surface-base)",border:"1px solid var(--stroke-default)",borderRadius:"var(--r-2xl)",padding:"32px",boxShadow:"var(--el-raised)",textAlign:"center"}}>
+              <span style={{fontSize:56,display:"block",marginBottom:14,animation:"pop .4s ease"}}>🎉</span>
+              <div style={{fontSize:20,fontWeight:800,color:"var(--content-base)",marginBottom:8,letterSpacing:"-.4px"}}>Application Received!</div>
+              <p style={{fontSize:14,color:"var(--content-muted)",lineHeight:1.65,marginBottom:20}}>Our talent team will review your profile and a hiring manager will reach out within 48 hours.</p>
+              <div style={{background:"var(--surface-subtle)",border:"1px solid var(--stroke-default)",borderRadius:"var(--r-lg)",padding:"12px 16px",fontSize:13,fontWeight:600,color:"var(--content-muted)",marginBottom:20}}>
+                Application ID: <strong style={{color:"var(--content-base)"}}>{done}</strong>
+              </div>
+              <a href="/" style={{display:"block",background:"var(--neutral-black)",color:"#fff",textDecoration:"none",textAlign:"center",padding:"12px",borderRadius:"var(--r-lg)",fontSize:14,fontWeight:700}}>← View All Jobs</a>
+            </div>
+          ) : (
+            <div style={{background:"var(--surface-base)",border:"1px solid var(--stroke-default)",borderRadius:"var(--r-2xl)",padding:"28px",boxShadow:"var(--el-raised)"}}>
+              {/* Form header */}
+              <div style={{fontSize:10,fontWeight:700,color:"var(--gold-500)",textTransform:"uppercase",letterSpacing:"2px",marginBottom:6}}>Free Registration</div>
+              <div style={{fontSize:20,fontWeight:800,color:"var(--content-base)",marginBottom:6,letterSpacing:"-.4px"}}>Apply for this Role</div>
+              <p style={{fontSize:13,color:"var(--content-muted)",marginBottom:20,lineHeight:1.5}}>Takes 30 seconds. Hiring manager will call you directly.</p>
+
+              {/* Trust note */}
+              <div style={{background:"var(--brand-50)",border:"1px solid rgba(26,86,255,.15)",borderRadius:"var(--r-lg)",padding:"10px 14px",marginBottom:20,display:"flex",alignItems:"flex-start",gap:10}}>
+                <span style={{fontSize:18,flexShrink:0}}>⭐</span>
+                <div style={{fontSize:12,fontWeight:500,color:"var(--brand-500)",lineHeight:1.5}}>
+                  <strong>Recruiters prefer profiles with CV, salary and notice period.</strong> Add these details below if you have them.
+                </div>
+              </div>
+
+              <div className="fg">
+                <label className="lb">Full Name</label>
+                <input className={`inp${errs.name?" er":""}`} placeholder="Ravi Kumar" value={f.name} onChange={e=>{set("name",e.target.value);clr("name")}} />
+                {errs.name&&<div className="et">{errs.name}</div>}
+              </div>
+              <div className="fg">
+                <label className="lb">Mobile Number</label>
+                <div style={{display:"flex",gap:8,alignItems:"center"}}>
+                  <div style={{background:"var(--surface-subtle)",border:"1.5px solid var(--stroke-default)",borderRadius:"var(--r-md)",padding:"10px 12px",fontSize:14,fontWeight:600,color:"var(--content-muted)",flexShrink:0}}>+91</div>
+                  <input className={`inp${errs.phone?" er":""}`} placeholder="10-digit mobile" value={f.phone} maxLength={10} inputMode="numeric" onChange={e=>{set("phone",e.target.value.replace(/[^0-9]/g,"").slice(0,10));clr("phone")}} style={{flex:1}} />
+                </div>
+                {errs.phone&&<div className="et">{errs.phone}</div>}
+              </div>
+              <div className="fg">
+                <label className="lb">Email <span className="opt">(optional)</span></label>
+                <input className={`inp${errs.email?" er":""}`} placeholder="you@company.com" value={f.email} onChange={e=>{set("email",e.target.value);clr("email")}} />
+                {errs.email&&<div className="et">{errs.email}</div>}
+              </div>
+
+              <div className="divider"/>
+
+              <div className="r2">
+                <div className="fg">
+                  <label className="lb">Experience <span className="opt">(yrs)</span></label>
+                  <input className="inp" placeholder="e.g. 5" value={f.years_exp} onChange={e=>set("years_exp",e.target.value)} />
+                </div>
+                <div className="fg">
+                  <label className="lb">Notice Period</label>
+                  <select className="inp" value={f.notice_period} onChange={e=>set("notice_period",e.target.value)}>
+                    <option value="">Select</option>
+                    {["Immediate","15 days","30 days","45 days","60 days","90 days"].map(o=><option key={o}>{o}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div className="r2">
+                <div className="fg">
+                  <label className="lb">Current CTC <span className="opt">(LPA)</span></label>
+                  <input className="inp" placeholder="e.g. 12" value={f.current_salary} onChange={e=>set("current_salary",e.target.value)} />
+                </div>
+                <div className="fg">
+                  <label className="lb">Expected CTC <span className="opt">(LPA)</span></label>
+                  <input className="inp" placeholder="e.g. 18" value={f.expected_salary} onChange={e=>set("expected_salary",e.target.value)} />
+                </div>
+              </div>
+
+              <div className="fg">
+                <label className="lb">Upload CV <span className="opt">(optional)</span></label>
+                <div className={`upz${drag?" dg":""}${cv?" dn":""}`}
+                  onDragOver={e=>{e.preventDefault();setDrag(true)}}
+                  onDragLeave={()=>setDrag(false)}
+                  onDrop={e=>{e.preventDefault();setDrag(false);handleFile(e.dataTransfer.files[0])}}
+                  onClick={()=>document.getElementById("cv-jp").click()}>
+                  <div style={{color:"var(--brand-500)",marginBottom:4}}><Ic n="up" s={18}/></div>
+                  {cv?<div className="upok">✓ {cv.name}</div>:<><div className="upt"><strong>Click to upload</strong> or drag & drop</div><div className="uph">PDF or Word · max 5 MB</div></>}
+                  <input id="cv-jp" type="file" style={{display:"none"}} accept=".pdf,.doc,.docx" onChange={e=>handleFile(e.target.files[0])} />
+                </div>
+              </div>
+
+              <button className="sbtn" onClick={submit} disabled={busy} style={{marginTop:6}}>
+                {busy?"Submitting…":"Submit Application →"}
+              </button>
             </div>
           )}
         </div>
-
-        {/* JD sections */}
-        {[["About This Role",job.about],["Responsibilities",job.responsibilities],["Requirements",job.requirements],["Perks & Benefits",job.perks]].filter(([,v])=>v).map(([title,text])=>(
-          <div key={title} style={{background:"var(--surface-base)",border:"1px solid var(--stroke-default)",borderRadius:"var(--r-xl)",padding:"24px 28px",marginBottom:12,boxShadow:"var(--el-raised)"}}>
-            <div style={{fontSize:11,fontWeight:700,color:"var(--content-muted)",textTransform:"uppercase",letterSpacing:"1.5px",marginBottom:10}}>{title}</div>
-            <div style={{fontSize:14,fontWeight:400,color:"var(--content-subtle)",lineHeight:1.8,whiteSpace:"pre-wrap"}}>{text}</div>
-          </div>
-        ))}
-
-        {/* Sticky apply bar */}
-        <div className="job-sticky-bar" style={{
-          position:"sticky",bottom:20,
-          background:"var(--surface-base)",
-          border:"1px solid var(--stroke-default)",
-          borderRadius:"var(--r-xl)",
-          padding:"16px 22px",
-          display:"flex",alignItems:"center",justifyContent:"space-between",
-          boxShadow:"var(--el-overlay)",
-          marginTop:16,flexWrap:"wrap",gap:12,
-        }}>
-          <div>
-            <div style={{fontSize:15,fontWeight:700,color:"var(--content-base)"}}>{job.title}</div>
-            <div style={{fontSize:13,fontWeight:500,color:"var(--content-muted)"}}>{job.company} · {job.location}</div>
-          </div>
-          <button className="jd-apply-btn" onClick={()=>setApplyJob(job)}>
-            Apply for this Role <Ic n="arrow" s={14}/>
-          </button>
-        </div>
       </div>
+
+      {/* Mobile apply CTA — only visible on small screens */}
+      <style>{`
+        @media(max-width:768px){
+          .jp-grid{grid-template-columns:1fr !important}
+          .jp-form-col{position:static !important}
+          .jp-trust-bar{gap:14px !important;padding:8px 16px !important}
+          .jp-trust-bar > div{font-size:11px !important}
+        }
+      `}</style>
 
       <footer className="footer">
         <ShineLogo height={24} />
         <div className="footer-right">© 2026 Shine.com · All Rights Reserved</div>
       </footer>
-
-      {applyJob && <ApplyModal job={applyJob} onClose={()=>setApplyJob(null)} />}
     </>
   );
 }
