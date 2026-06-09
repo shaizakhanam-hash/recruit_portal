@@ -817,9 +817,9 @@ function ApplyModal({ job, onClose }) {
       let cv_filename = null;
       if (cv) {
         const path = Date.now() + "-" + cv.name.replace(/\s+/g, "_");
-        const { error: upErr } = await s.storage.from("cvs").upload(path, cv, { cacheControl:"3600", upsert:false });
+        const { error: upErr } = await s.storage.from("CVS").upload(path, cv, { cacheControl:"3600", upsert:false });
         if (upErr) throw upErr;
-        cv_url = s.storage.from("cvs").getPublicUrl(path).data.publicUrl;
+        cv_url = s.storage.from("CVS").getPublicUrl(path).data.publicUrl;
         cv_filename = cv.name;
       }
       const id = "SHN-" + Math.random().toString(36).slice(2,8).toUpperCase();
@@ -1404,9 +1404,9 @@ function JobPage() {
       let cv_filename = null;
       if (cv) {
         const path = Date.now() + "-" + cv.name.replace(/\s+/g, "_");
-        const { error: upErr } = await s.storage.from("cvs").upload(path, cv, { cacheControl:"3600", upsert:false });
+        const { error: upErr } = await s.storage.from("CVS").upload(path, cv, { cacheControl:"3600", upsert:false });
         if (upErr) throw upErr;
-        cv_url = s.storage.from("cvs").getPublicUrl(path).data.publicUrl;
+        cv_url = s.storage.from("CVS").getPublicUrl(path).data.publicUrl;
         cv_filename = cv.name;
       }
       const id = "SHN-" + Math.random().toString(36).slice(2,8).toUpperCase();
