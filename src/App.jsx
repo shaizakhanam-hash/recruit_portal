@@ -237,9 +237,9 @@ body{
 .marquee-wrap::before{left:0;background:linear-gradient(90deg,#0D1117 0%,transparent 100%)}
 .marquee-wrap::after{right:0;background:linear-gradient(270deg,#0D1117 0%,transparent 100%)}
 .marquee-track{
-  display:flex;align-items:center;gap:48px;
+  display:flex;align-items:center;gap:20px;
   width:max-content;
-  animation:marquee 28s linear infinite;
+  animation:marquee 35s linear infinite;
 }
 .marquee-track:hover{animation-play-state:paused}
 @keyframes marquee{
@@ -1196,21 +1196,38 @@ function AdminPanel() {
 
 // ── COMPANY MARQUEE ──────────────────────────────────────
 const MARQUEE_COS = [
-  { name:"HCL Technologies", domain:"hcltech.com" },
-  { name:"Amazon",           domain:"amazon.com" },
-  { name:"Genpact",          domain:"genpact.com" },
-  { name:"Cvent",            domain:"cvent.com" },
-  { name:"Infosys",          domain:"infosys.com" },
-  { name:"Wipro",            domain:"wipro.com" },
-  { name:"TCS",              domain:"tcs.com" },
-  { name:"Accenture",        domain:"accenture.com" },
-  { name:"Capgemini",        domain:"capgemini.com" },
-  { name:"Cognizant",        domain:"cognizant.com" },
-  { name:"IBM",              domain:"ibm.com" },
-  { name:"Microsoft",        domain:"microsoft.com" },
-  { name:"Google",           domain:"google.com" },
-  { name:"Salesforce",       domain:"salesforce.com" },
+  { name:"HCL Technologies", logo:"https://www.hcltech.com/themes/custom/hclt/logo.svg",           bg:"#0057B8" },
+  { name:"Amazon",           logo:"https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg", bg:"#FF9900" },
+  { name:"Genpact",          logo:"https://www.genpact.com/hubfs/genpact-logo.svg",                bg:"#E31837" },
+  { name:"Cvent",            logo:"https://images.cvent.com/l/en/cvent-logo.svg",                  bg:"#00A4E4" },
+  { name:"Infosys",          logo:"https://upload.wikimedia.org/wikipedia/commons/9/95/Infosys_logo.svg", bg:"#007CC3" },
+  { name:"Wipro",            logo:"https://upload.wikimedia.org/wikipedia/commons/a/a0/Wipro_Primary_Logo_Color_RGB.svg", bg:"#341C6B" },
+  { name:"TCS",              logo:"https://upload.wikimedia.org/wikipedia/commons/b/b1/Tata_Consultancy_Services_Logo.svg", bg:"#1A3A6B" },
+  { name:"Accenture",        logo:"https://upload.wikimedia.org/wikipedia/commons/c/cd/Accenture.svg", bg:"#A100FF" },
+  { name:"Capgemini",        logo:"https://upload.wikimedia.org/wikipedia/commons/f/f9/Capgemini_201x_logo.svg", bg:"#0070AD" },
+  { name:"Cognizant",        logo:"https://upload.wikimedia.org/wikipedia/commons/3/38/Cognizant_logo_2022.svg", bg:"#1263A0" },
+  { name:"IBM",              logo:"https://upload.wikimedia.org/wikipedia/commons/5/51/IBM_logo.svg", bg:"#006699" },
+  { name:"Microsoft",        logo:"https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg", bg:"#FFFFFF" },
 ];
+
+function CoLogo({ co }) {
+  const [err, setErr] = useState(false);
+  if (err) return (
+    <div style={{background:co.bg,borderRadius:8,padding:"6px 14px",display:"flex",alignItems:"center",justifyContent:"center",minWidth:100,height:44}}>
+      <span style={{fontSize:12,fontWeight:800,color:"#fff",letterSpacing:-.3}}>{co.name}</span>
+    </div>
+  );
+  return (
+    <div style={{background:"#FFFFFF",borderRadius:10,padding:"8px 18px",display:"flex",alignItems:"center",justifyContent:"center",minWidth:110,height:48,boxShadow:"0 2px 8px rgba(0,0,0,.12)"}}>
+      <img
+        src={co.logo}
+        alt={co.name}
+        style={{height:26,width:"auto",maxWidth:100,objectFit:"contain",display:"block"}}
+        onError={()=>setErr(true)}
+      />
+    </div>
+  );
+}
 
 function CompanyMarquee() {
   const doubled = [...MARQUEE_COS, ...MARQUEE_COS];
@@ -1218,17 +1235,8 @@ function CompanyMarquee() {
     <div className="marquee-wrap">
       <div className="marquee-track">
         {doubled.map((co, i) => (
-          <div key={i} className="co-badge">
-            <img
-              src={"https://logo.clearbit.com/" + co.domain}
-              alt={co.name}
-              style={{height:28,width:"auto",maxWidth:100,objectFit:"contain",display:"block"}}
-              onError={e=>{
-                e.target.style.display="none";
-                e.target.nextSibling.style.display="flex";
-              }}
-            />
-            <span style={{display:"none",fontSize:12,fontWeight:700,color:"#333",alignItems:"center"}}>{co.name}</span>
+          <div key={i} style={{flexShrink:0}}>
+            <CoLogo co={co} />
           </div>
         ))}
       </div>
