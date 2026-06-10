@@ -867,13 +867,17 @@ function ApplyModal({ job, onClose }) {
         cv_filename = cv.name;
       }
       const id = "SHN-" + Math.random().toString(36).slice(2,8).toUpperCase();
+      const params = new URLSearchParams(window.location.search);
+      const utm_source = params.get("utm_source") || sessionStorage.getItem("utm_source") || null;
+      const utm_medium = params.get("utm_medium") || sessionStorage.getItem("utm_medium") || null;
+      const utm_campaign = params.get("utm_campaign") || sessionStorage.getItem("utm_campaign") || null;
       const { error } = await s.from("applications").insert([{
         id, job_id: String(job.id), job_title: job.title,
         job_location: job.location, company_id: "shine",
         name: f.name, phone: f.phone, email: f.email||null,
         years_exp: f.years_exp||null, notice_period: f.notice_period||null,
         current_salary: f.current_salary||null, expected_salary: f.expected_salary||null,
-        cv_filename, cv_url,
+        cv_filename, cv_url, utm_source, utm_medium, utm_campaign,
       }]);
       if (error) throw error;
       setDone({ ...f, id, job_title: job.title });
@@ -1108,6 +1112,8 @@ function AdminPanel() {
   const [showForm, setShowForm] = useState(false);
   const [editJob, setEditJob] = useState(null);
   const [search, setSearch] = useState("");
+  const [jobFilter, setJobFilter] = useState("");
+  const [utmFilter, setUtmFilter] = useState("");
   const [loading, setLoading] = useState(false);
 
   const load = async () => {
@@ -1127,11 +1133,14 @@ function AdminPanel() {
 
   const filteredApps = apps.filter(a => {
     const q = search.toLowerCase();
-    return !q || a.name?.toLowerCase().includes(q) || a.phone?.includes(q) || a.email?.toLowerCase().includes(q);
+    const matchSearch = !q || a.name?.toLowerCase().includes(q) || a.phone?.includes(q) || a.email?.toLowerCase().includes(q);
+    const matchJob = !jobFilter || a.job_id === String(jobFilter);
+    const matchUtm = !utmFilter || a.utm_source === utmFilter;
+    return matchSearch && matchJob && matchUtm;
   });
 
   const downloadCSV = () => {
-    const cols = ["id","job_title","name","phone","email","years_exp","notice_period","current_salary","expected_salary","cv_filename","created_at"];
+    const cols = ["id","job_title","name","phone","email","years_exp","notice_period","current_salary","expected_salary","cv_filename","cv_url","utm_source","utm_medium","utm_campaign","created_at"];
     const hdr = cols.join(",");
     const rows = filteredApps.map(r=>cols.map(c=>`"${(r[c]??"").toString().replace(/"/g,'""')}"`).join(",")).join("\n");
     const a = document.createElement("a"); a.href=URL.createObjectURL(new Blob([hdr+"\n"+rows],{type:"text/csv"}));
@@ -1208,7 +1217,17 @@ function AdminPanel() {
             ))
         ) : (
           <>
-            <div className="frow"><input className="fi" placeholder="Search by name, phone, or email…" value={search} onChange={e=>setSearch(e.target.value)} /></div>
+            <div className="frow">
+            <input className="fi" placeholder="Search by name, phone, or email…" value={search} onChange={e=>setSearch(e.target.value)} />
+            <select className="fi" style={{maxWidth:220,cursor:"pointer"}} value={jobFilter} onChange={e=>setJobFilter(e.target.value)}>
+              <option value="">All Jobs</option>
+              {jobs.map(j=><option key={j.id} value={j.id}>{j.title}</option>)}
+            </select>
+            <select className="fi" style={{maxWidth:180,cursor:"pointer"}} value={utmFilter} onChange={e=>setUtmFilter(e.target.value)}>
+              <option value="">All Sources</option>
+              {[...new Set(apps.map(a=>a.utm_source).filter(Boolean))].map(s=><option key={s} value={s}>{s}</option>)}
+            </select>
+          </div>
             {filteredApps.length===0
               ? <div className="empty-state"><div className="empty-ic">📭</div><p>No applications yet.</p></div>
               : <div className="tbl-wrap"><table>
@@ -1225,6 +1244,9 @@ function AdminPanel() {
                     <td>{r.current_salary?r.current_salary+"L":"—"}</td>
                     <td>{r.expected_salary?r.expected_salary+"L":"—"}</td>
                     <td>{r.cv_url?<a href={r.cv_url} target="_blank" rel="noreferrer" style={{color:"var(--brand-500)",fontSize:12,fontWeight:700,textDecoration:"none",display:"flex",alignItems:"center",gap:4}}>📎 View</a>:<span style={{color:"var(--content-disabled)"}}>—</span>}</td>
+                    <td><span style={{fontSize:11,background:"var(--brand-50)",color:"var(--brand-500)",padding:"2px 7px",borderRadius:20,fontWeight:600}}>{r.utm_source||"—"}</span></td>
+                    <td style={{fontSize:12,color:"var(--content-muted)"}}>{r.utm_medium||"—"}</td>
+                    <td style={{fontSize:12,color:"var(--content-muted)",maxWidth:140,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{r.utm_campaign||"—"}</td>
                     <td style={{whiteSpace:"nowrap",color:"var(--content-muted)"}}>{new Date(r.created_at).toLocaleDateString("en-IN",{day:"2-digit",month:"short"})}</td>
                   </tr>
                 ))}</tbody>
@@ -1296,6 +1318,11 @@ function Portal() {
   const [applyJob, setApplyJob] = useState(null);
 
   useEffect(() => {
+    // Persist UTMs in sessionStorage so they survive navigation to /jobs/slug
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("utm_source")) sessionStorage.setItem("utm_source", params.get("utm_source"));
+    if (params.get("utm_medium")) sessionStorage.setItem("utm_medium", params.get("utm_medium"));
+    if (params.get("utm_campaign")) sessionStorage.setItem("utm_campaign", params.get("utm_campaign"));
     (async () => {
       const s = await sb();
       const { data } = await s.from("shine_jobs").select("*").eq("active",true).order("created_at",{ascending:false});
@@ -1426,6 +1453,10 @@ function JobPage() {
   const clr = k => setErrs(p=>({...p,[k]:""}));
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("utm_source")) sessionStorage.setItem("utm_source", params.get("utm_source"));
+    if (params.get("utm_medium")) sessionStorage.setItem("utm_medium", params.get("utm_medium"));
+    if (params.get("utm_campaign")) sessionStorage.setItem("utm_campaign", params.get("utm_campaign"));
     (async () => {
       const s = await sb();
       const { data } = await s.from("shine_jobs").select("*").eq("active", true);
@@ -1467,13 +1498,17 @@ function JobPage() {
         cv_filename = cv.name;
       }
       const id = "SHN-" + Math.random().toString(36).slice(2,8).toUpperCase();
+      const params = new URLSearchParams(window.location.search);
+      const utm_source = params.get("utm_source") || sessionStorage.getItem("utm_source") || null;
+      const utm_medium = params.get("utm_medium") || sessionStorage.getItem("utm_medium") || null;
+      const utm_campaign = params.get("utm_campaign") || sessionStorage.getItem("utm_campaign") || null;
       const { error } = await s.from("applications").insert([{
         id, job_id: String(job.id), job_title: job.title,
         job_location: job.location, company_id: "shine",
         name: f.name, phone: f.phone, email: f.email||null,
         years_exp: f.years_exp||null, notice_period: f.notice_period||null,
         current_salary: f.current_salary||null, expected_salary: f.expected_salary||null,
-        cv_filename, cv_url,
+        cv_filename, cv_url, utm_source, utm_medium, utm_campaign,
       }]);
       if (error) throw error;
       setDone(id);
