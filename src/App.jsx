@@ -1512,9 +1512,9 @@ function JobPage() {
       <Nav />
 
       {/* Trust bar */}
-      <div style={{background:"var(--neutral-black)",borderBottom:"1px solid rgba(255,255,255,.08)",padding:"10px 16px",display:"flex",alignItems:"center",justifyContent:"flex-start",gap:20,overflowX:"auto",WebkitOverflowScrolling:"touch",scrollbarWidth:"none"}}>
+      <div style={{background:"var(--neutral-black)",borderBottom:"1px solid rgba(255,255,255,.08)",padding:"10px 24px",display:"flex",alignItems:"center",justifyContent:"center",gap:32,flexWrap:"wrap"}}>
         {[["📞","Recruiter calls you directly"],["🏢","Senior & lead roles only"],["🔒","No middlemen · Direct process"]].map(([ic,txt])=>(
-          <div key={txt} style={{display:"flex",alignItems:"center",gap:7,fontSize:12,fontWeight:500,color:"rgba(255,255,255,.6)",flexShrink:0,whiteSpace:"nowrap"}}>
+          <div key={txt} style={{display:"flex",alignItems:"center",gap:7,fontSize:12,fontWeight:500,color:"rgba(255,255,255,.6)"}}>
             <span style={{fontSize:14}}>{ic}</span>{txt}
           </div>
         ))}
