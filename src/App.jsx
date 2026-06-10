@@ -1102,6 +1102,89 @@ function JobFormModal({ editJob, onSave, onClose }) {
   );
 }
 
+
+// ── UTM BREAKDOWN COMPONENT ───────────────────────────────
+function UTMBreakdown({ apps }) {
+  const [expanded, setExpanded] = useState({});
+
+  // Group by source → medium → campaign
+  const tree = {};
+  apps.forEach(a => {
+    const src = a.utm_source || "(direct)";
+    const med = a.utm_medium || "(none)";
+    const cam = a.utm_campaign || "(none)";
+    if (!tree[src]) tree[src] = { count:0, mediums:{} };
+    tree[src].count++;
+    if (!tree[src].mediums[med]) tree[src].mediums[med] = { count:0, campaigns:{} };
+    tree[src].mediums[med].count++;
+    if (!tree[src].mediums[med].campaigns[cam]) tree[src].mediums[med].campaigns[cam] = 0;
+    tree[src].mediums[med].campaigns[cam]++;
+  });
+
+  const total = apps.length;
+  const sources = Object.entries(tree).sort((a,b)=>b[1].count-a[1].count);
+
+  const toggle = (key) => setExpanded(p => ({...p, [key]: !p[key]}));
+
+  return (
+    <div style={{background:"var(--surface-base)",border:"1px solid var(--stroke-default)",borderRadius:"var(--r-xl)",overflow:"hidden",boxShadow:"var(--el-raised)"}}>
+      {/* Header */}
+      <div style={{display:"grid",gridTemplateColumns:"1fr 80px 60px 80px",padding:"10px 18px",background:"var(--surface-subtle)",borderBottom:"1px solid var(--stroke-default)"}}>
+        {["SOURCE / MEDIUM / CAMPAIGN","COUNT","%","CVs"].map(h=>(
+          <div key={h} style={{fontSize:11,fontWeight:700,color:"var(--content-muted)",letterSpacing:".7px",textAlign:h==="SOURCE / MEDIUM / CAMPAIGN"?"left":"right"}}>{h}</div>
+        ))}
+      </div>
+
+      {sources.map(([src, srcData]) => (
+        <div key={src}>
+          {/* Source row */}
+          <div
+            onClick={()=>toggle(src)}
+            style={{display:"grid",gridTemplateColumns:"1fr 80px 60px 80px",padding:"12px 18px",borderBottom:"1px solid var(--stroke-default)",cursor:"pointer",background:expanded[src]?"var(--brand-50)":"var(--surface-base)",transition:"background .15s"}}
+          >
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              <span style={{fontSize:13,color:"var(--content-muted)",fontWeight:500,width:14}}>{expanded[src]?"▾":"▸"}</span>
+              <span style={{fontSize:13,fontWeight:700,color:"var(--content-base)"}}>{src}</span>
+              <span style={{background:"var(--brand-50)",border:"1px solid rgba(26,86,255,.15)",color:"var(--brand-500)",fontSize:10,fontWeight:700,padding:"1px 7px",borderRadius:20}}>{Object.keys(srcData.mediums).length} medium{Object.keys(srcData.mediums).length!==1?"s":""}</span>
+            </div>
+            <div style={{fontSize:14,fontWeight:800,color:"var(--content-base)",textAlign:"right"}}>{srcData.count}</div>
+            <div style={{fontSize:13,fontWeight:600,color:"var(--content-muted)",textAlign:"right"}}>{Math.round(srcData.count/total*100)}%</div>
+            <div style={{fontSize:13,fontWeight:600,color:"var(--content-muted)",textAlign:"right"}}>{apps.filter(a=>(a.utm_source||"(direct)")===src&&a.cv_filename).length}</div>
+          </div>
+
+          {/* Medium rows */}
+          {expanded[src] && Object.entries(srcData.mediums).sort((a,b)=>b[1].count-a[1].count).map(([med, medData]) => (
+            <div key={med}>
+              <div
+                onClick={()=>toggle(src+"__"+med)}
+                style={{display:"grid",gridTemplateColumns:"1fr 80px 60px 80px",padding:"10px 18px 10px 36px",borderBottom:"1px solid var(--stroke-default)",cursor:"pointer",background:expanded[src+"__"+med]?"#F5F8FF":"var(--surface-subtle)",transition:"background .15s"}}
+              >
+                <div style={{display:"flex",alignItems:"center",gap:8}}>
+                  <span style={{fontSize:12,color:"var(--content-disabled)",width:14}}>{expanded[src+"__"+med]?"▾":"▸"}</span>
+                  <span style={{fontSize:12,fontWeight:600,color:"var(--content-subtle)"}}>{med}</span>
+                </div>
+                <div style={{fontSize:13,fontWeight:700,color:"var(--content-subtle)",textAlign:"right"}}>{medData.count}</div>
+                <div style={{fontSize:12,fontWeight:500,color:"var(--content-muted)",textAlign:"right"}}>{Math.round(medData.count/total*100)}%</div>
+                <div style={{fontSize:12,fontWeight:500,color:"var(--content-muted)",textAlign:"right"}}>{apps.filter(a=>(a.utm_source||"(direct)")===src&&(a.utm_medium||"(none)")===med&&a.cv_filename).length}</div>
+              </div>
+
+              {/* Campaign rows */}
+              {expanded[src+"__"+med] && Object.entries(medData.campaigns).sort((a,b)=>b[1]-a[1]).map(([cam, cnt]) => (
+                <div key={cam} style={{display:"grid",gridTemplateColumns:"1fr 80px 60px 80px",padding:"8px 18px 8px 56px",borderBottom:"1px solid var(--stroke-default)",background:"#FAFBFF"}}>
+                  <div style={{fontSize:12,fontWeight:500,color:"var(--content-muted)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{cam}</div>
+                  <div style={{fontSize:12,fontWeight:600,color:"var(--content-subtle)",textAlign:"right"}}>{cnt}</div>
+                  <div style={{fontSize:12,color:"var(--content-disabled)",textAlign:"right"}}>{Math.round(cnt/total*100)}%</div>
+                  <div style={{fontSize:12,color:"var(--content-disabled)",textAlign:"right"}}>{apps.filter(a=>(a.utm_source||"(direct)")===src&&(a.utm_medium||"(none)")===med&&(a.utm_campaign||"(none)")===cam&&a.cv_filename).length}</div>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // ── ADMIN PANEL ───────────────────────────────────────────
 function AdminPanel() {
   const [authed, setAuthed] = useState(false);
@@ -1217,6 +1300,54 @@ function AdminPanel() {
             ))
         ) : (
           <>
+            {/* Per-job metrics */}
+            <div style={{marginBottom:22}}>
+              <div style={{fontSize:11,fontWeight:700,color:"var(--content-muted)",textTransform:"uppercase",letterSpacing:"1.5px",marginBottom:12}}>Registrations by Job</div>
+              <div style={{background:"var(--surface-base)",border:"1px solid var(--stroke-default)",borderRadius:"var(--r-xl)",overflow:"hidden",boxShadow:"var(--el-raised)"}}>
+                <table style={{width:"100%",borderCollapse:"collapse",fontSize:13}}>
+                  <thead style={{background:"var(--surface-subtle)",borderBottom:"1px solid var(--stroke-default)"}}>
+                    <tr>
+                      {["Job Title","Registered","CVs Received","CV %","Top Source"].map(h=>(
+                        <th key={h} style={{padding:"10px 16px",textAlign:h==="Job Title"||h==="Top Source"?"left":"center",fontWeight:700,fontSize:11,color:"var(--content-muted)",textTransform:"uppercase",letterSpacing:".7px",whiteSpace:"nowrap"}}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {jobs.map(job=>{
+                      const ja = apps.filter(a=>a.job_id===String(job.id));
+                      const cvs = ja.filter(a=>a.cv_filename).length;
+                      const pct = ja.length ? Math.round(cvs/ja.length*100) : 0;
+                      const srcs = ja.reduce((acc,a)=>{ if(a.utm_source) acc[a.utm_source]=(acc[a.utm_source]||0)+1; return acc; },{});
+                      const top = Object.entries(srcs).sort((a,b)=>b[1]-a[1])[0];
+                      const isSel = jobFilter===String(job.id);
+                      return (
+                        <tr key={job.id} style={{borderBottom:"1px solid var(--stroke-default)",cursor:"pointer",background:isSel?"var(--brand-50)":"transparent"}} onClick={()=>setJobFilter(isSel?"":String(job.id))}>
+                          <td style={{padding:"12px 16px"}}>
+                            <div style={{fontWeight:600,color:"var(--content-base)",fontSize:13}}>{job.title}</div>
+                            <div style={{fontSize:11,color:"var(--content-muted)",marginTop:2}}>{job.company}</div>
+                          </td>
+                          <td style={{padding:"12px 16px",textAlign:"center"}}><span style={{fontSize:20,fontWeight:800,color:"var(--content-base)"}}>{ja.length}</span></td>
+                          <td style={{padding:"12px 16px",textAlign:"center"}}><span style={{fontSize:20,fontWeight:800,color:"var(--brand-500)"}}>{cvs}</span></td>
+                          <td style={{padding:"12px 16px",textAlign:"center"}}><span style={{fontSize:12,fontWeight:700,color:pct>50?"#027A48":"var(--content-muted)",background:pct>50?"#EAFAF0":"var(--surface-subtle)",padding:"3px 10px",borderRadius:20}}>{pct}%</span></td>
+                          <td style={{padding:"12px 16px"}}>{top?<span style={{fontSize:11,fontWeight:700,color:"var(--brand-500)",background:"var(--brand-50)",padding:"3px 9px",borderRadius:20}}>{top[0]} ({top[1]})</span>:<span style={{color:"var(--content-disabled)",fontSize:12}}>—</span>}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                  <tfoot style={{background:"var(--surface-subtle)",borderTop:"2px solid var(--stroke-default)"}}>
+                    <tr>
+                      <td style={{padding:"10px 16px",fontWeight:700,fontSize:12,color:"var(--content-subtle)"}}>Total</td>
+                      <td style={{padding:"10px 16px",textAlign:"center",fontWeight:800,fontSize:16,color:"var(--content-base)"}}>{apps.length}</td>
+                      <td style={{padding:"10px 16px",textAlign:"center",fontWeight:800,fontSize:16,color:"var(--brand-500)"}}>{apps.filter(a=>a.cv_filename).length}</td>
+                      <td style={{padding:"10px 16px",textAlign:"center",fontWeight:700,fontSize:13,color:"var(--content-muted)"}}>{apps.length?Math.round(apps.filter(a=>a.cv_filename).length/apps.length*100):0}%</td>
+                      <td></td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+              {jobFilter&&<div style={{marginTop:8,fontSize:12,color:"var(--brand-500)",fontWeight:600,cursor:"pointer"}} onClick={()=>setJobFilter("")}>✕ Clear filter</div>}
+            </div>
+            <div style={{fontSize:11,fontWeight:700,color:"var(--content-muted)",textTransform:"uppercase",letterSpacing:"1.5px",marginBottom:12}}>All Applications {jobFilter?`— ${jobs.find(j=>String(j.id)===jobFilter)?.title||""}`:""}</div>
             <div className="frow">
             <input className="fi" placeholder="Search by name, phone, or email…" value={search} onChange={e=>setSearch(e.target.value)} />
             <select className="fi" style={{maxWidth:220,cursor:"pointer"}} value={jobFilter} onChange={e=>setJobFilter(e.target.value)}>
@@ -1252,6 +1383,17 @@ function AdminPanel() {
                 ))}</tbody>
               </table></div>
             }
+
+          {/* UTM Traffic Breakdown */}
+          {view === "apps" && filteredApps.length > 0 && (
+            <div style={{marginTop:28}}>
+              <div style={{marginBottom:14}}>
+                <div style={{fontSize:16,fontWeight:800,color:"var(--content-base)",letterSpacing:"-.3px"}}>Traffic Breakdown</div>
+                <div style={{fontSize:13,fontWeight:400,color:"var(--content-muted)",marginTop:3}}>Source → Medium → Campaign · {filteredApps.length} registrations</div>
+              </div>
+              <UTMBreakdown apps={filteredApps} />
+            </div>
+          )}
           </>
         )}
       </div>
