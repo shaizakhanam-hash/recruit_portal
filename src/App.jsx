@@ -782,20 +782,24 @@ function logoInitials(name) {
 
 // Known company logos — add more as needed
 const KNOWN_LOGOS = {
-  "hcl":        "https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/HCL_Technologies_logo.svg/320px-HCL_Technologies_logo.svg.png",
-  "hcltech":    "https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/HCL_Technologies_logo.svg/320px-HCL_Technologies_logo.svg.png",
-  "hcl tech":   "https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/HCL_Technologies_logo.svg/320px-HCL_Technologies_logo.svg.png",
-  "hcl technologies": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/HCL_Technologies_logo.svg/320px-HCL_Technologies_logo.svg.png",
-  "tcs":        "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Tata_Consultancy_Services_Logo.svg/320px-Tata_Consultancy_Services_Logo.svg.png",
-  "infosys":    "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Infosys_logo.svg/320px-Infosys_logo.svg.png",
-  "wipro":      "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Wipro_Primary_Logo_Color_RGB.svg/320px-Wipro_Primary_Logo_Color_RGB.svg.png",
-  "accenture":  "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Accenture.svg/320px-Accenture.svg.png",
-  "amazon":     "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/320px-Amazon_logo.svg.png",
-  "microsoft":  "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Microsoft_logo_%282012%29.svg/320px-Microsoft_logo_%282012%29.svg.png",
-  "ibm":        "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/IBM_logo.svg/320px-IBM_logo.svg.png",
-  "capgemini":  "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Capgemini_201x_logo.svg/320px-Capgemini_201x_logo.svg.png",
-  "cognizant":  "https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Cognizant_logo_2022.svg/320px-Cognizant_logo_2022.svg.png",
-  "genpact":    "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Genpact_logo.svg/320px-Genpact_logo.svg.png",
+  "hcl":              "https://cdn.brandfetch.io/hcltech.com/w/400/h/400/logo",
+  "hcltech":          "https://cdn.brandfetch.io/hcltech.com/w/400/h/400/logo",
+  "hcl tech":         "https://cdn.brandfetch.io/hcltech.com/w/400/h/400/logo",
+  "hcl technologies": "https://cdn.brandfetch.io/hcltech.com/w/400/h/400/logo",
+  "tcs":              "https://cdn.brandfetch.io/tcs.com/w/400/h/400/logo",
+  "tata consultancy services": "https://cdn.brandfetch.io/tcs.com/w/400/h/400/logo",
+  "infosys":          "https://cdn.brandfetch.io/infosys.com/w/400/h/400/logo",
+  "wipro":            "https://cdn.brandfetch.io/wipro.com/w/400/h/400/logo",
+  "accenture":        "https://cdn.brandfetch.io/accenture.com/w/400/h/400/logo",
+  "amazon":           "https://cdn.brandfetch.io/amazon.com/w/400/h/400/logo",
+  "microsoft":        "https://cdn.brandfetch.io/microsoft.com/w/400/h/400/logo",
+  "ibm":              "https://cdn.brandfetch.io/ibm.com/w/400/h/400/logo",
+  "capgemini":        "https://cdn.brandfetch.io/capgemini.com/w/400/h/400/logo",
+  "cognizant":        "https://cdn.brandfetch.io/cognizant.com/w/400/h/400/logo",
+  "genpact":          "https://cdn.brandfetch.io/genpact.com/w/400/h/400/logo",
+  "cvent":            "https://cdn.brandfetch.io/cvent.com/w/400/h/400/logo",
+  "google":           "https://cdn.brandfetch.io/google.com/w/400/h/400/logo",
+  "salesforce":       "https://cdn.brandfetch.io/salesforce.com/w/400/h/400/logo",
 };
 
 function getKnownLogo(name) {
