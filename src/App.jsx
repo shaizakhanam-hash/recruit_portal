@@ -227,7 +227,7 @@ body{
   background:#0D1117;
   border-top:1px solid rgba(255,255,255,.07);
   border-bottom:1px solid rgba(255,255,255,.07);
-  padding:20px 0;
+  padding:24px 0;
   overflow:hidden;
   position:relative;
 }
@@ -257,7 +257,7 @@ body{
 }
 .co-badge:hover{background:rgba(255,255,255,.1)}
 .co-badge-logo{display:none}
-.co-badge-name{font-size:13px;font-weight:600;color:rgba(255,255,255,.85);letter-spacing:.2px}
+.co-badge-name{display:none}
 
 /* ── JOB CARD ── */
 .jcard{
@@ -844,7 +844,7 @@ function ApplyModal({ job, onClose }) {
         <div className="suc">
           <span className="sic">🎉</span>
           <div className="sh2">Application Received!</div>
-          <p className="sp">Our team will review your profile and reach out within 2 business days.</p>
+          <p className="sp">Your application has been received. A recruiter will reach out to you directly.</p>
           <div className="sbox">
             {[["Application ID",<span className="idp">{done.id}</span>],["Name",done.name],["Phone",done.phone],done.email&&["Email",done.email],["Applied For",done.job_title]].filter(Boolean).map(([k,v])=>(
               <div key={k} className="sr"><span className="sk">{k}</span><span className="sv">{v}</span></div>
@@ -868,7 +868,7 @@ function ApplyModal({ job, onClose }) {
           </div>
         </div>
         <div className="modal-h">Apply for this Role</div>
-        <div className="modal-s">Fill in your details and we'll reach out within 2 business days.</div>
+        <div className="modal-s">Fill in your details and a recruiter will call you directly.</div>
 
         <div className="form-section-label">Personal Details</div>
         <div className="r2">
@@ -1196,18 +1196,20 @@ function AdminPanel() {
 
 // ── COMPANY MARQUEE ──────────────────────────────────────
 const MARQUEE_COS = [
-  { name:"HCL Technologies", logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/HCL_Technologies_logo.svg/320px-HCL_Technologies_logo.svg.png" },
-  { name:"Amazon",           logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/320px-Amazon_logo.svg.png" },
-  { name:"Genpact",          logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Genpact_logo.svg/320px-Genpact_logo.svg.png" },
-  { name:"Cvent",            logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Cvent_logo.svg/320px-Cvent_logo.svg.png" },
-  { name:"Infosys",          logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Infosys_logo.svg/320px-Infosys_logo.svg.png" },
-  { name:"Wipro",            logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Wipro_Primary_Logo_Color_RGB.svg/320px-Wipro_Primary_Logo_Color_RGB.svg.png" },
-  { name:"TCS",              logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Tata_Consultancy_Services_Logo.svg/320px-Tata_Consultancy_Services_Logo.svg.png" },
-  { name:"Accenture",        logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Accenture.svg/320px-Accenture.svg.png" },
-  { name:"Capgemini",        logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Capgemini_201x_logo.svg/320px-Capgemini_201x_logo.svg.png" },
-  { name:"Cognizant",        logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Cognizant_logo_2022.svg/320px-Cognizant_logo_2022.svg.png" },
-  { name:"IBM",              logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/IBM_logo.svg/320px-IBM_logo.svg.png" },
-  { name:"Microsoft",        logo:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Microsoft_logo_%282012%29.svg/320px-Microsoft_logo_%282012%29.svg.png" },
+  { name:"HCL Technologies", domain:"hcltech.com" },
+  { name:"Amazon",           domain:"amazon.com" },
+  { name:"Genpact",          domain:"genpact.com" },
+  { name:"Cvent",            domain:"cvent.com" },
+  { name:"Infosys",          domain:"infosys.com" },
+  { name:"Wipro",            domain:"wipro.com" },
+  { name:"TCS",              domain:"tcs.com" },
+  { name:"Accenture",        domain:"accenture.com" },
+  { name:"Capgemini",        domain:"capgemini.com" },
+  { name:"Cognizant",        domain:"cognizant.com" },
+  { name:"IBM",              domain:"ibm.com" },
+  { name:"Microsoft",        domain:"microsoft.com" },
+  { name:"Google",           domain:"google.com" },
+  { name:"Salesforce",       domain:"salesforce.com" },
 ];
 
 function CompanyMarquee() {
@@ -1218,12 +1220,15 @@ function CompanyMarquee() {
         {doubled.map((co, i) => (
           <div key={i} className="co-badge">
             <img
-              src={co.logo}
+              src={"https://logo.clearbit.com/" + co.domain}
               alt={co.name}
-              style={{height:22,width:"auto",maxWidth:90,objectFit:"contain",filter:"brightness(0) invert(1)",opacity:.85}}
-              onError={e=>{ e.target.style.display="none"; e.target.nextSibling.style.display="inline"; }}
+              style={{height:28,width:"auto",maxWidth:100,objectFit:"contain",display:"block"}}
+              onError={e=>{
+                e.target.style.display="none";
+                e.target.nextSibling.style.display="flex";
+              }}
             />
-            <span style={{display:"none",fontSize:12,fontWeight:700,color:"rgba(255,255,255,.8)"}}>{co.name}</span>
+            <span style={{display:"none",fontSize:12,fontWeight:700,color:"#333",alignItems:"center"}}>{co.name}</span>
           </div>
         ))}
       </div>
@@ -1284,11 +1289,11 @@ function Portal() {
       <section className="hero">
         <div className="hero-eyebrow"><span className="hero-dot"/>Senior &amp; Lead · Software Engineering</div>
         <h1>Where Top Techies<br /><em>Get Headhunted</em></h1>
-        <p className="hero-sub">Curated high-impact roles in software engineering — mid to senior level. No applications lost in a void. Hiring managers call you directly.</p>
+        <p className="hero-sub">Curated high-impact roles in software engineering — mid to senior level. No applications lost in a void. Recruiters call you directly.</p>
         <div className="hero-stats">
           <div className="hstat"><div className="hstat-n">500+</div><div className="hstat-l">Placements Made</div></div>
           <div className="hstat"><div className="hstat-n">50+</div><div className="hstat-l">Hiring Companies</div></div>
-          <div className="hstat"><div className="hstat-n">Direct</div><div className="hstat-l">Calls from Hiring Managers</div></div>
+          <div className="hstat"><div className="hstat-n">Direct</div><div className="hstat-l">Calls from Recruiters</div></div>
         </div>
       </section>
 
@@ -1297,7 +1302,7 @@ function Portal() {
       <div className="section">
         <div className="section-header">
           <div className="section-title">Current Openings</div>
-          <div className="section-badge"><span className="section-badge-dot"/>Hiring Managers Will Call You</div>
+          <div className="section-badge"><span className="section-badge-dot"/>Recruiters Will Call You</div>
         </div>
 
         {loading ? <div className="loading">Loading jobs…</div> :
@@ -1311,7 +1316,7 @@ function Portal() {
                   <div className="jcard-title">{job.title}</div>
                   <div className="jcard-meta">
                     {job.experience && <><span className="jcard-meta-item"><Ic n="bag" s={12}/>{job.experience}</span><span className="jcard-meta-dot"/></>}
-                    {job.salary && <><span className="jcard-meta-item"><Ic n="rupee" s={12}/>{job.salary}</span><span className="jcard-meta-dot"/></>}
+                    {job.salary && <><span className="jcard-meta-item"><span style={{fontSize:13,fontWeight:600}}>₹</span>{job.salary}</span><span className="jcard-meta-dot"/></>}
                     {job.location && <span className="jcard-meta-item"><Ic n="loc" s={12}/>{job.location}</span>}
                   </div>
                   {(job.tags||[]).length > 0 && (
@@ -1456,7 +1461,7 @@ function JobPage() {
 
       {/* Trust bar */}
       <div style={{background:"var(--neutral-black)",borderBottom:"1px solid rgba(255,255,255,.08)",padding:"10px 16px",display:"flex",alignItems:"center",justifyContent:"flex-start",gap:20,overflowX:"auto",WebkitOverflowScrolling:"touch",scrollbarWidth:"none"}}>
-        {[["📞","Hiring manager calls you directly"],["🏢","Senior & lead roles only"],["⚡","Response within 48 hours"],["🔒","No middlemen · Direct process"]].map(([ic,txt])=>(
+        {[["📞","Recruiter calls you directly"],["🏢","Senior & lead roles only"],["🔒","No middlemen · Direct process"]].map(([ic,txt])=>(
           <div key={txt} style={{display:"flex",alignItems:"center",gap:7,fontSize:12,fontWeight:500,color:"rgba(255,255,255,.6)",flexShrink:0,whiteSpace:"nowrap"}}>
             <span style={{fontSize:14}}>{ic}</span>{txt}
           </div>
@@ -1504,7 +1509,7 @@ function JobPage() {
             <div style={{background:"var(--surface-base)",border:"1px solid var(--stroke-default)",borderRadius:"var(--r-2xl)",padding:"32px",boxShadow:"var(--el-raised)",textAlign:"center"}}>
               <span style={{fontSize:56,display:"block",marginBottom:14,animation:"pop .4s ease"}}>🎉</span>
               <div style={{fontSize:20,fontWeight:800,color:"var(--content-base)",marginBottom:8,letterSpacing:"-.4px"}}>Application Received!</div>
-              <p style={{fontSize:14,color:"var(--content-muted)",lineHeight:1.65,marginBottom:20}}>Our talent team will review your profile and a hiring manager will reach out within 48 hours.</p>
+              <p style={{fontSize:14,color:"var(--content-muted)",lineHeight:1.65,marginBottom:20}}>Your application has been received. A recruiter will reach out to you directly.</p>
               <div style={{background:"var(--surface-subtle)",border:"1px solid var(--stroke-default)",borderRadius:"var(--r-lg)",padding:"12px 16px",fontSize:13,fontWeight:600,color:"var(--content-muted)",marginBottom:20}}>
                 Application ID: <strong style={{color:"var(--content-base)"}}>{done}</strong>
               </div>
@@ -1515,7 +1520,7 @@ function JobPage() {
               {/* Form header */}
               <div style={{fontSize:10,fontWeight:700,color:"var(--gold-500)",textTransform:"uppercase",letterSpacing:"2px",marginBottom:6}}>Free Registration</div>
               <div style={{fontSize:20,fontWeight:800,color:"var(--content-base)",marginBottom:6,letterSpacing:"-.4px"}}>Apply for this Role</div>
-              <p style={{fontSize:13,color:"var(--content-muted)",marginBottom:20,lineHeight:1.5}}>Takes 30 seconds. Hiring manager will call you directly.</p>
+              <p style={{fontSize:13,color:"var(--content-muted)",marginBottom:20,lineHeight:1.5}}>Takes 30 seconds. Recruiter will call you directly.</p>
 
               {/* Trust note */}
               <div style={{background:"var(--brand-50)",border:"1px solid rgba(26,86,255,.15)",borderRadius:"var(--r-lg)",padding:"10px 14px",marginBottom:20,display:"flex",alignItems:"flex-start",gap:10}}>
