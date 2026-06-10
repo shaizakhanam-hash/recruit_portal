@@ -780,6 +780,46 @@ function logoInitials(name) {
   return w.length === 1 ? w[0].slice(0,2).toUpperCase() : (w[0][0]+w[1][0]).toUpperCase();
 }
 
+// Known company logos — add more as needed
+const KNOWN_LOGOS = {
+  "hcl":        "https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/HCL_Technologies_logo.svg/320px-HCL_Technologies_logo.svg.png",
+  "hcltech":    "https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/HCL_Technologies_logo.svg/320px-HCL_Technologies_logo.svg.png",
+  "hcl tech":   "https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/HCL_Technologies_logo.svg/320px-HCL_Technologies_logo.svg.png",
+  "hcl technologies": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/HCL_Technologies_logo.svg/320px-HCL_Technologies_logo.svg.png",
+  "tcs":        "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Tata_Consultancy_Services_Logo.svg/320px-Tata_Consultancy_Services_Logo.svg.png",
+  "infosys":    "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Infosys_logo.svg/320px-Infosys_logo.svg.png",
+  "wipro":      "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Wipro_Primary_Logo_Color_RGB.svg/320px-Wipro_Primary_Logo_Color_RGB.svg.png",
+  "accenture":  "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Accenture.svg/320px-Accenture.svg.png",
+  "amazon":     "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/320px-Amazon_logo.svg.png",
+  "microsoft":  "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Microsoft_logo_%282012%29.svg/320px-Microsoft_logo_%282012%29.svg.png",
+  "ibm":        "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/IBM_logo.svg/320px-IBM_logo.svg.png",
+  "capgemini":  "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Capgemini_201x_logo.svg/320px-Capgemini_201x_logo.svg.png",
+  "cognizant":  "https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Cognizant_logo_2022.svg/320px-Cognizant_logo_2022.svg.png",
+  "genpact":    "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Genpact_logo.svg/320px-Genpact_logo.svg.png",
+};
+
+function getKnownLogo(name) {
+  return KNOWN_LOGOS[(name||"").toLowerCase().trim()] || null;
+}
+
+// Smart company logo component — shows real logo if known, else colored initials
+function CompanyLogo({ name, size = 48, radius = 10 }) {
+  const [imgErr, setImgErr] = useState(false);
+  const knownLogo = getKnownLogo(name);
+  if (knownLogo && !imgErr) {
+    return (
+      <div style={{width:size,height:size,borderRadius:radius,background:"#fff",border:"1px solid rgba(0,0,0,.08)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,overflow:"hidden",padding:6}}>
+        <img src={knownLogo} alt={name} style={{width:"100%",height:"100%",objectFit:"contain"}} onError={()=>setImgErr(true)} />
+      </div>
+    );
+  }
+  return (
+    <div style={{width:size,height:size,borderRadius:radius,background:logoColor(name),border:"1px solid rgba(0,0,0,.06)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,fontSize:size*0.28,fontWeight:800,color:"#fff",letterSpacing:"-.5px"}}>
+      {logoInitials(name)}
+    </div>
+  );
+}
+
 // ── APPLY MODAL ───────────────────────────────────────────
 function ApplyModal({ job, onClose }) {
   const [f, setF] = useState({ name:"",phone:"",email:"",years_exp:"",notice_period:"",current_salary:"",expected_salary:"" });
@@ -861,7 +901,7 @@ function ApplyModal({ job, onClose }) {
       <div className="apply-modal">
         <button className="modal-close" onClick={onClose}>×</button>
         <div className="modal-job-pill">
-          <div className="mjp-logo" style={{background:logoColor(job.company)}}>{logoInitials(job.company)}</div>
+          <CompanyLogo name={job.company} size={36} radius={7} />
           <div>
             <div className="mjp-title">{job.title}</div>
             <div className="mjp-sub">{job.company} · {job.location}</div>
@@ -943,7 +983,7 @@ function JDModal({ job, onApply, onClose }) {
         <div className="jd-hdr">
           <button className="jd-close" onClick={onClose}>×</button>
           <div className="jd-co-row">
-            <div className="jd-co-logo" style={{background:logoColor(job.company)}}>{logoInitials(job.company)}</div>
+            <CompanyLogo name={job.company} size={52} radius={10} />
             <div>
               <div className="jd-co-name">{job.company}</div>
               <div className="jd-title">{job.title}</div>
@@ -1318,7 +1358,7 @@ function Portal() {
             ? <div className="empty-state"><div className="empty-ic">📭</div><p>No openings right now. Check back soon.</p></div>
             : jobs.map((job, idx) => (
               <div key={job.id} className="jcard" onClick={()=>{ window.location.href='/jobs/'+toSlug(job.title, job.company); }}>
-                <div className="co-logo" style={{background:logoColor(job.company)}}>{logoInitials(job.company)}</div>
+                <CompanyLogo name={job.company} size={48} radius={10} />
                 <div className="jcard-body">
                   <div className="jcard-co">{job.company}</div>
                   <div className="jcard-title">{job.title}</div>
@@ -1483,9 +1523,7 @@ function JobPage() {
           {/* Job header card */}
           <div style={{background:"var(--surface-base)",border:"1px solid var(--stroke-default)",borderRadius:"var(--r-2xl)",padding:"20px",marginBottom:12,boxShadow:"var(--el-raised)"}}>
             <div style={{display:"flex",alignItems:"center",gap:14,marginBottom:18}}>
-              <div className="co-logo" style={{background:logoColor(job.company),width:54,height:54,fontSize:18,borderRadius:12,flexShrink:0}}>
-                {logoInitials(job.company)}
-              </div>
+              <CompanyLogo name={job.company} size={54} radius={12} />
               <div>
                 <div style={{fontSize:12,fontWeight:600,color:"var(--content-muted)",marginBottom:4}}>{job.company}</div>
                 <div style={{fontSize:"clamp(18px,4vw,24px)",fontWeight:800,color:"var(--content-base)",letterSpacing:"-.5px",lineHeight:1.2}}>{job.title}</div>
