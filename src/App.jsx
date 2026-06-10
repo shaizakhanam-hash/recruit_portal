@@ -1378,7 +1378,10 @@ function AdminPanel() {
                     <td><span style={{fontSize:11,background:"var(--brand-50)",color:"var(--brand-500)",padding:"2px 7px",borderRadius:20,fontWeight:600}}>{r.utm_source||"—"}</span></td>
                     <td style={{fontSize:12,color:"var(--content-muted)"}}>{r.utm_medium||"—"}</td>
                     <td style={{fontSize:12,color:"var(--content-muted)",maxWidth:140,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{r.utm_campaign||"—"}</td>
-                    <td style={{whiteSpace:"nowrap",color:"var(--content-muted)"}}>{new Date(r.created_at).toLocaleDateString("en-IN",{day:"2-digit",month:"short"})}</td>
+                    <td style={{whiteSpace:"nowrap",color:"var(--content-muted)",minWidth:110}}>
+                      <div style={{fontWeight:600,fontSize:12}}>{new Date(r.created_at).toLocaleDateString("en-IN",{day:"2-digit",month:"short",year:"2-digit"})}</div>
+                      <div style={{fontSize:11,marginTop:2,color:"var(--content-disabled)"}}>{new Date(r.created_at).toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit",hour12:true})}</div>
+                    </td>
                   </tr>
                 ))}</tbody>
               </table></div>
